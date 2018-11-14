@@ -2,24 +2,23 @@ import gql from "graphql-tag";
 
 import { Apollo } from "./Apollo";
 
-import { MeQuery_cliMe } from "../types/schema";
+import { UserProjectsQuery_cliUserProjects } from "../types/schema";
 
-export class MeApi {
+export class FindUserProjectsApi {
   token: string;
 
   constructor(token: string) {
     this.token = token;
   }
 
-  async results(): Promise<MeQuery_cliMe> {
+  async results(): Promise<UserProjectsQuery_cliUserProjects[]> {
     const operation = {
       query: gql`
-        query MeQuery {
-          cliMe {
+        query UserProjectsQuery {
+          cliUserProjects {
             id
-            email
-            firstName
-            lastName
+            key
+            name
           }
         }
       `,
@@ -30,8 +29,8 @@ export class MeApi {
       }
     };
     try {
-      const { cliMe } = await new Apollo(operation).fetch();
-      return cliMe;
+      const { cliUserProjects } = await new Apollo(operation).fetch();
+      return cliUserProjects;
     } catch (err) {
       throw err;
     }

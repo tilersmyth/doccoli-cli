@@ -2,6 +2,23 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: UserProjectsQuery
+// ====================================================
+
+export interface UserProjectsQuery_cliUserProjects {
+  id: string;
+  key: string;
+  name: string;
+}
+
+export interface UserProjectsQuery {
+  cliUserProjects: UserProjectsQuery_cliUserProjects[];
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: LoginMutation
 // ====================================================
 
@@ -31,20 +48,15 @@ export interface LoginMutationVariables {
 // GraphQL query operation: MeQuery
 // ====================================================
 
-export interface MeQuery_cliMe_me {
+export interface MeQuery_cliMe {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
 }
 
-export interface MeQuery_cliMe {
-  ok: boolean;
-  me: MeQuery_cliMe_me | null;
-}
-
 export interface MeQuery {
-  cliMe: MeQuery_cliMe;
+  cliMe: MeQuery_cliMe | null;
 }
 
 /* tslint:disable */

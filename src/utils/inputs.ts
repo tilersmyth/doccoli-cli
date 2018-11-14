@@ -10,3 +10,12 @@ export let loginInputs: Array<Object> = [
     message: "Enter password"
   }
 ];
+
+export const createProjectInput = [
+  {
+    type: "list",
+    name: "id",
+    message: "Choose existing Doccoli project or create new",
+    choices: []
+  }
+];

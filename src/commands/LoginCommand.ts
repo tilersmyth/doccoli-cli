@@ -14,7 +14,7 @@ export class LoginCommand {
   command = "login";
   describe = "Log user in.";
 
-  async handler(argv: any): Promise<void> {
+  async handler(argv: any): Promise<Boolean> {
     console.log(chalk.green("\n\n ======*** Login to Doccoli ***====== \n\n"));
 
     const values = await inquirer.prompt<LoginMutationVariables>(loginInputs);
@@ -22,7 +22,7 @@ export class LoginCommand {
     // Validation
     if (!values.email || !values.password) {
       console.log(chalk.red("\nemail and password are required for login\n"));
-      return;
+      return false;
     }
 
     try {
@@ -32,14 +32,15 @@ export class LoginCommand {
         errors.forEach((err: any) => {
           console.log(`\n${chalk.red(err.message)}\n`);
         });
-        return;
+        return false;
       }
 
       await keytar.setToken(token as string);
-
       await console.log("\nSuccessfully logged in\n");
+      return true;
     } catch (err) {
       console.log(`\n${chalk.red("Unexpected server error")}\n`);
+      return false;
     }
   }
 }
