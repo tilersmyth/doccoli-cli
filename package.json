@@ -6,22 +6,37 @@
   "license": "MIT",
   "scripts": {
     "build": "rimraf ./dist && tsc",
-    "start": "ts-node src/bin.ts"
+    "start": "ts-node src/bin.ts",
+    "schema:download": "apollo schema:download --endpoint=http://localhost:4000",
+    "codegen:generate": "apollo codegen:generate --queries=./src/**/*.ts --schema=./schema.json --target=typescript --outputFlat=./src/types/schema.ts",
+    "gen:types": "npm run schema:download && npm run codegen:generate"
   },
   "bin": {
     "doccoli": "dist/bin.js"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
+    "@types/graphql": "^14.0.2",
+    "@types/inquirer": "^0.0.43",
+    "@types/isomorphic-fetch": "^0.0.34",
+    "@types/keytar": "^4.0.1",
     "@types/node": "^10.12.6",
     "@types/yargs": "^12.0.1",
+    "apollo": "^1.6.0",
     "rimraf": "^2.6.2",
     "ts-node": "^7.0.1",
     "typescript": "^3.1.6"
   },
   "dependencies": {
+    "apollo-link": "^1.2.3",
+    "apollo-link-http": "^1.5.5",
     "chalk": "^2.4.1",
     "core-js": "^2.5.7",
+    "graphql": "^0.13.2",
+    "graphql-tag": "^2.10.0",
+    "inquirer": "^6.2.0",
+    "isomorphic-fetch": "^2.2.1",
+    "keytar": "^4.3.0",
     "yargs": "^12.0.2"
   }
 }
