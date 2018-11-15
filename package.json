@@ -1,6 +1,6 @@
 {
-  "name": "doccoli-cli",
-  "description": "CLI for Doccoli",
+  "name": "undoc-cli",
+  "description": "CLI for Undoc",
   "version": "1.0.0",
   "main": "dist/bin.js",
   "license": "MIT",
@@ -12,7 +12,7 @@
     "gen:types": "npm run schema:download && npm run codegen:generate"
   },
   "bin": {
-    "doccoli": "dist/bin.js"
+    "undoc": "dist/bin.js"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",

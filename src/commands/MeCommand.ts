@@ -1,7 +1,7 @@
 import chalk from "chalk";
 
 import { MeApi } from "../api/MeApi";
-import { MeQuery_cliMe } from "../types/schema";
+
 import keytar from "../utils/keytar";
 
 /**

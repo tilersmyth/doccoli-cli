@@ -14,8 +14,8 @@ export class LoginCommand {
   command = "login";
   describe = "Log user in.";
 
-  async handler(argv: any): Promise<Boolean> {
-    console.log(chalk.green("\n\n ======*** Login to Doccoli ***====== \n\n"));
+  async handler(): Promise<Boolean> {
+    console.log(chalk.green("\n\n ======*** Login to Undoc ***====== \n\n"));
 
     const values = await inquirer.prompt<LoginMutationVariables>(loginInputs);
 

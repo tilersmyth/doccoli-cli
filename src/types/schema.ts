@@ -2,6 +2,32 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: CreateProjectMutation
+// ====================================================
+
+export interface CreateProjectMutation_cliCreateProject_project {
+  id: string;
+  name: string;
+}
+
+export interface CreateProjectMutation_cliCreateProject {
+  ok: boolean;
+  project: CreateProjectMutation_cliCreateProject_project | null;
+  error: string | null;
+}
+
+export interface CreateProjectMutation {
+  cliCreateProject: CreateProjectMutation_cliCreateProject;
+}
+
+export interface CreateProjectMutationVariables {
+  name: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: UserProjectsQuery
 // ====================================================
 

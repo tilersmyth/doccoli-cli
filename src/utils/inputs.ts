@@ -11,11 +11,19 @@ export let loginInputs: Array<Object> = [
   }
 ];
 
-export const createProjectInput = [
+export const projectOptionsInput = [
   {
     type: "list",
     name: "id",
-    message: "Choose existing Doccoli project or create new",
+    message: "Choose existing Undoc project or create new",
     choices: []
+  }
+];
+
+export const createProjectInput = [
+  {
+    type: "input",
+    name: "projectName",
+    message: "Project name:"
   }
 ];

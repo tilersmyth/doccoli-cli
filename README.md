@@ -1,3 +1,3 @@
-# Doccoli CLI
+# Undoc CLI
 
 More to come soon... famous last words...

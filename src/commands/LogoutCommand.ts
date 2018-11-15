@@ -1,5 +1,3 @@
-import chalk from "chalk";
-
 import keytar from "../utils/keytar";
 
 /**
