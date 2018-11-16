@@ -3,7 +3,6 @@ import * as inquirer from "inquirer";
 
 import { LoginApi } from "../api/LoginApi";
 
-import { loginInputs } from "../utils/inputs";
 import { LoginMutationVariables } from "../types/schema";
 import keytar from "../utils/keytar";
 
@@ -14,10 +13,23 @@ export class LoginCommand {
   command = "login";
   describe = "Log user in.";
 
-  async handler(): Promise<Boolean> {
+  private inputs = [
+    {
+      type: "input",
+      name: "email",
+      message: "Enter email"
+    },
+    {
+      type: "password",
+      name: "password",
+      message: "Enter password"
+    }
+  ];
+
+  handler = async (): Promise<Boolean> => {
     console.log(chalk.green("\n\n ======*** Login to Undoc ***====== \n\n"));
 
-    const values = await inquirer.prompt<LoginMutationVariables>(loginInputs);
+    const values = await inquirer.prompt<LoginMutationVariables>(this.inputs);
 
     // Validation
     if (!values.email || !values.password) {
@@ -42,5 +54,5 @@ export class LoginCommand {
       console.log(`\n${chalk.red("Unexpected server error")}\n`);
       return false;
     }
-  }
+  };
 }
