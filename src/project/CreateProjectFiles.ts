@@ -13,7 +13,7 @@ export class CreateProjectFiles {
     this.project = project;
   }
 
-  private tdJson = {
+  private tdJson: any = {
     mode: "module",
     json: "./docs.json",
     excludeExternals: true,
@@ -40,6 +40,8 @@ export class CreateProjectFiles {
       console.log(chalk.red(`\nerror creating project file\n`));
       return;
     }
+
+    this.tdJson.target = this.project.target;
 
     await writeFile(`${rootDir}/.undoc/td.json`, JSON.stringify(this.tdJson));
   };

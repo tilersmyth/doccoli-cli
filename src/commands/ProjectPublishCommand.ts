@@ -23,7 +23,7 @@ export class ProjectPublishCommand {
 
   handler = async (): Promise<void> => {
     const lastCommit = await new GetLastCommit().run();
-    const branch = await new Commits().branch();
+    const commits = new Commits();
     const version = await npmVersion();
     const config = await undocConfig();
 
@@ -34,12 +34,14 @@ export class ProjectPublishCommand {
     if (!lastCommit) {
       this.inputs[0].message = `Start new Undoc for ${
         config.name
-      } on ${branch} @ v${version}?`;
+      } on ${await commits.branch()} @ v${version}?`;
       const { confirm } = await (<any>inquirer.prompt(this.inputs));
 
       if (!confirm) {
         return;
       }
     }
+
+    console.log(await commits.latestCommitSha());
   };
 }
