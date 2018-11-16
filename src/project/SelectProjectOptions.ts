@@ -4,7 +4,7 @@ import * as inquirer from "inquirer";
 import { FindUserProjectsApi } from "../api/FindUserProjectsApi";
 
 import keytar from "../utils/keytar";
-import { projectOptionsInput } from "../utils/inputs";
+import { CreateProjectMutation_cliCreateProject_project } from "../types/schema";
 
 /**
  * Join existig Undoc project or create new
@@ -18,7 +18,16 @@ export class SelectProjectOptions {
     return await new FindUserProjectsApi(token).results();
   }
 
-  async run(): Promise<string | null> {
+  private inputs = [
+    {
+      type: "list",
+      name: "selectedProject",
+      message: "Choose existing Undoc project or create new",
+      choices: []
+    }
+  ];
+
+  run = async (): Promise<CreateProjectMutation_cliCreateProject_project | null> => {
     const projects = (await this.getProjects()) || [];
 
     if (projects.length === 0) {
@@ -29,17 +38,17 @@ export class SelectProjectOptions {
     for (const project of projects) {
       projectChoices.push({
         name: project.name,
-        value: project.key
+        value: { key: project.key, name: project.name }
       });
       projectChoices.push(new inquirer.Separator());
     }
 
     projectChoices.push({ name: "Create new project", value: null });
 
-    projectOptionsInput[0].choices = projectChoices;
+    this.inputs[0].choices = projectChoices;
 
-    const { id } = await (<any>inquirer.prompt(projectOptionsInput));
+    const { selectedProject } = await (<any>inquirer.prompt(this.inputs));
 
-    return id;
-  }
+    return selectedProject;
+  };
 }

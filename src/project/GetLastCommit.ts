@@ -1,7 +1,9 @@
 import { LastCommitApi } from "../api/LastCommitApi";
 
+import { Commits } from "../git/Commits";
+
 import keytar from "../utils/keytar";
-import configFile from "../utils/configFile";
+import { undocConfig } from "../utils/configFile";
 
 import { CliLastCommit_cliLastCommit } from "../types/schema";
 
@@ -16,12 +18,14 @@ export class GetLastCommit {
       return null;
     }
 
-    const config = await configFile();
+    const config = await undocConfig();
 
     if (!config) {
       return null;
     }
 
-    return await new LastCommitApi(token).results(config.key);
+    const branch = await new Commits().branch();
+
+    return await new LastCommitApi(token).results(config.key, branch);
   };
 }

@@ -6,7 +6,7 @@
 // ====================================================
 
 export interface CreateProjectMutation_cliCreateProject_project {
-  id: string;
+  key: string;
   name: string;
 }
 
@@ -59,6 +59,7 @@ export interface CliLastCommit {
 
 export interface CliLastCommitVariables {
   projectId: string;
+  branch: string;
 }
 
 /* tslint:disable */

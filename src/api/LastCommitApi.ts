@@ -11,17 +11,20 @@ export class LastCommitApi {
     this.token = token;
   }
 
-  async results(projectId: string): Promise<CliLastCommit_cliLastCommit> {
+  async results(
+    projectId: string,
+    branch: string
+  ): Promise<CliLastCommit_cliLastCommit> {
     const operation = {
       query: gql`
-        query CliLastCommit($projectId: ID!) {
-          cliLastCommit(projectId: $projectId) {
+        query CliLastCommit($projectId: ID!, $branch: String!) {
+          cliLastCommit(projectId: $projectId, branch: $branch) {
             sha
             branch
           }
         }
       `,
-      variables: { projectId },
+      variables: { projectId, branch },
       context: {
         headers: {
           Authorization: this.token

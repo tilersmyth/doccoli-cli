@@ -5,12 +5,13 @@ import { CreateProjectApi } from "../api/CreateProjectApi";
 
 import keytar from "../utils/keytar";
 import { createProjectInput } from "../utils/inputs";
+import { CreateProjectMutation_cliCreateProject_project } from "../types/schema";
 
 /**
  * Create new project
  */
 export class CreateNewProject {
-  run = async (): Promise<string | null> => {
+  run = async (): Promise<CreateProjectMutation_cliCreateProject_project | null> => {
     const token = await keytar.getToken();
 
     if (!token) {
@@ -30,6 +31,6 @@ export class CreateNewProject {
       chalk.green(`\n${result.project!.name} successfully created\n`)
     );
 
-    return result.project!.id;
+    return result.project;
   };
 }

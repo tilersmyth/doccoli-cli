@@ -1,14 +1,16 @@
 import chalk from "chalk";
 import { readDir, createDir, writeFile } from "../utils/files";
 
+import { CreateProjectMutation_cliCreateProject_project } from "../types/schema";
+
 /**
  * Create Undoc folder with config files
  */
 export class CreateProjectFiles {
-  id: string;
+  project: CreateProjectMutation_cliCreateProject_project;
 
-  constructor(id: string) {
-    this.id = id;
+  constructor(project: CreateProjectMutation_cliCreateProject_project) {
+    this.project = project;
   }
 
   private tdJson = {
@@ -31,7 +33,7 @@ export class CreateProjectFiles {
 
     const projectFile = await writeFile(
       `${rootDir}/.undoc/config.json`,
-      `{"key":"${this.id}"}`
+      `{"key":"${this.project.key}", "name":"${this.project.name}"}`
     );
 
     if (!projectFile) {

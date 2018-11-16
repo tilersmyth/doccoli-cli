@@ -23,15 +23,15 @@ export class ProjectInitCommand {
     console.log(chalk.green("\nStarting new Undoc setup!\n"));
 
     // 3. Select from existing projects
-    let id = await new SelectProjectOptions().run();
+    let project = await new SelectProjectOptions().run();
 
-    if (!id) {
+    if (!project) {
       // 4. Create new project
-      id = await new CreateNewProject().run();
-      if (!id) return;
+      project = await new CreateNewProject().run();
+      if (!project) return;
     }
 
     //5. Generate undoc config files
-    await new CreateProjectFiles(id).run();
+    await new CreateProjectFiles(project).run();
   }
 }

@@ -18,7 +18,7 @@ export class CreateProjectApi {
           cliCreateProject(name: $name) {
             ok
             project {
-              id
+              key
               name
             }
             error

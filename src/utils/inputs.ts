@@ -11,15 +11,6 @@ export let loginInputs: Array<Object> = [
   }
 ];
 
-export const projectOptionsInput = [
-  {
-    type: "list",
-    name: "id",
-    message: "Choose existing Undoc project or create new",
-    choices: []
-  }
-];
-
 export const createProjectInput = [
   {
     type: "input",

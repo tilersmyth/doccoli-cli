@@ -15,25 +15,26 @@ export class Commits {
     });
   }
 
-  branch = async () => {
-    return await this.command("git rev-parse --abbrev-ref HEAD");
+  branch = async (): Promise<string> => {
+    const branch = await this.command("git rev-parse --abbrev-ref HEAD");
+    return branch.trim();
   };
 
   initialCommit = async (): Promise<string> => {
-    return await this.command("git rev-list --max-parents=0 HEAD");
+    const commit = await this.command("git rev-list --max-parents=0 HEAD");
+    return commit.trim();
   };
 
   latestCommitSha = async (): Promise<string> => {
     const branch = await this.branch();
-    return await this.command(`git rev-parse origin/${branch}`);
+    const commit = await this.command(`git rev-parse origin/${branch}`);
+    return commit.trim();
   };
 
   fileChanges = async (sha?: string) => {
     const newSha = await this.latestCommitSha();
     const oldSha = sha || (await this.initialCommit());
 
-    return await this.command(
-      `git diff --name-only ${oldSha.trim()} ${newSha.trim()}`
-    );
+    return await this.command(`git diff --name-only ${oldSha} ${newSha}`);
   };
 }
