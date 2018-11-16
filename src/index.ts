@@ -5,6 +5,7 @@ import { LoginCommand } from "./commands/LoginCommand";
 import { LogoutCommand } from "./commands/LogoutCommand";
 import { MeCommand } from "./commands/MeCommand";
 import { ProjectInitCommand } from "./commands/ProjectInitCommand";
+import { ProjectPublishCommand } from "./commands/ProjectPublishCommand";
 
 export default (args: any) => {
   yargs(args)
@@ -13,6 +14,7 @@ export default (args: any) => {
     .command(new LogoutCommand())
     .command(new MeCommand())
     .command(new ProjectInitCommand())
+    .command(new ProjectPublishCommand())
     .demandCommand(1)
     .strict()
     .alias("v", "version")

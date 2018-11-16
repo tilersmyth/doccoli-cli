@@ -45,6 +45,26 @@ export interface UserProjectsQuery {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: CliLastCommit
+// ====================================================
+
+export interface CliLastCommit_cliLastCommit {
+  sha: string;
+  branch: string;
+}
+
+export interface CliLastCommit {
+  cliLastCommit: CliLastCommit_cliLastCommit | null;
+}
+
+export interface CliLastCommitVariables {
+  projectId: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: LoginMutation
 // ====================================================
 

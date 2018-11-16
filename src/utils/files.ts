@@ -4,7 +4,7 @@ export const readDir = (filePath: string) => fs.existsSync(filePath);
 
 export const createDir = (filePath: string) => fs.mkdirSync(filePath);
 
-export const readFile = (filePath: string) =>
+export const readFile = (filePath: string): Promise<string> =>
   new Promise(resolve => {
     return fs.readFile(filePath, "utf-8", (_, data) => {
       resolve(data);

@@ -1,6 +1,5 @@
 import chalk from "chalk";
-
-import { readDir, readFile, createDir, writeFile } from "../utils/files";
+import { readDir, createDir, writeFile } from "../utils/files";
 
 /**
  * Create Undoc folder with config files

@@ -13,10 +13,9 @@ export class SelectProjectOptions {
   private async getProjects() {
     const token = await keytar.getToken();
     if (!token) {
-      console.log(chalk.red("Not authorized. Please login."));
       return;
     }
-    return await new FindUserProjectsApi(token as string).results();
+    return await new FindUserProjectsApi(token).results();
   }
 
   async run(): Promise<string | null> {

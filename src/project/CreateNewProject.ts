@@ -14,15 +14,12 @@ export class CreateNewProject {
     const token = await keytar.getToken();
 
     if (!token) {
-      console.log(chalk.red("Not authorized. Please login."));
       return null;
     }
 
     const { projectName } = await (<any>inquirer.prompt(createProjectInput));
 
-    const result = await new CreateProjectApi(token as string).results(
-      projectName
-    );
+    const result = await new CreateProjectApi(token).results(projectName);
 
     if (!result.ok) {
       console.log(chalk.red(`\n${result.error}\n`));
