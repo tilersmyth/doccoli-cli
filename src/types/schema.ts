@@ -8,7 +8,6 @@
 export interface CreateProjectMutation_cliCreateProject_project {
   key: string;
   name: string;
-  target: string;
 }
 
 export interface CreateProjectMutation_cliCreateProject {
@@ -23,7 +22,6 @@ export interface CreateProjectMutation {
 
 export interface CreateProjectMutationVariables {
   name: string;
-  target: string;
 }
 
 /* tslint:disable */

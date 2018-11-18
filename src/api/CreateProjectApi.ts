@@ -11,25 +11,21 @@ export class CreateProjectApi {
     this.token = token;
   }
 
-  async results(
-    name: string,
-    target: string
-  ): Promise<CreateProjectMutation_cliCreateProject> {
+  async results(name: string): Promise<CreateProjectMutation_cliCreateProject> {
     const operation = {
       query: gql`
-        mutation CreateProjectMutation($name: String!, $target: String!) {
-          cliCreateProject(name: $name, target: $target) {
+        mutation CreateProjectMutation($name: String!) {
+          cliCreateProject(name: $name) {
             ok
             project {
               key
               name
-              target
             }
             error
           }
         }
       `,
-      variables: { name, target },
+      variables: { name },
       context: {
         headers: {
           Authorization: this.token

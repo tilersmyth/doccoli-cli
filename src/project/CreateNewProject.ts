@@ -15,16 +15,6 @@ export class CreateNewProject {
       type: "input",
       name: "projectName",
       message: "Project name:"
-    },
-    {
-      type: "list",
-      name: "projectTarget",
-      message: "Project ECMAScript target version:",
-      choices: [
-        { name: "ES3", value: "ES3" },
-        { name: "ES5", value: "ES5" },
-        { name: "ES6", value: "ES6" }
-      ]
     }
   ];
 
@@ -35,14 +25,9 @@ export class CreateNewProject {
       return null;
     }
 
-    const { projectName, projectTarget } = await (<any>(
-      inquirer.prompt(this.inputs)
-    ));
+    const { projectName } = await (<any>inquirer.prompt(this.inputs));
 
-    const result = await new CreateProjectApi(token).results(
-      projectName,
-      projectTarget
-    );
+    const result = await new CreateProjectApi(token).results(projectName);
 
     if (!result.ok) {
       console.log(chalk.red(`\n${result.error}\n`));

@@ -15,14 +15,10 @@ export class ProjectInitCommand {
 
   async handler(): Promise<void> {
     // 1. Check user auth
-    const auth = await new ProjectUserAuth().run();
-
-    if (!auth) return;
+    await new ProjectUserAuth().run();
 
     // 2. Check project environment
-    const valiation = await new ProjectValidation().run();
-
-    if (!valiation) return;
+    await new ProjectValidation().run();
 
     console.log(chalk.green("\nStarting new Undoc setup!\n"));
 
