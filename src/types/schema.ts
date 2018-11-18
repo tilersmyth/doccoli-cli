@@ -5,15 +5,9 @@
 // GraphQL mutation operation: CreateProjectMutation
 // ====================================================
 
-export interface CreateProjectMutation_cliCreateProject_project {
+export interface CreateProjectMutation_cliCreateProject {
   key: string;
   name: string;
-}
-
-export interface CreateProjectMutation_cliCreateProject {
-  ok: boolean;
-  project: CreateProjectMutation_cliCreateProject_project | null;
-  error: string | null;
 }
 
 export interface CreateProjectMutation {
@@ -69,14 +63,9 @@ export interface CliLastCommitVariables {
 // GraphQL mutation operation: LoginMutation
 // ====================================================
 
-export interface LoginMutation_cliLogin_errors {
-  path: string;
-  message: string;
-}
-
 export interface LoginMutation_cliLogin {
   token: string | null;
-  errors: LoginMutation_cliLogin_errors[] | null;
+  error: string | null;
 }
 
 export interface LoginMutation {

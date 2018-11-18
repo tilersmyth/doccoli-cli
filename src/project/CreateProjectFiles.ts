@@ -3,15 +3,15 @@ import chalk from "chalk";
 
 import { readDir, createDir, writeFile } from "../utils/files";
 
-import { CreateProjectMutation_cliCreateProject_project } from "../types/schema";
+import { CreateProjectMutation_cliCreateProject } from "../types/schema";
 
 /**
  * Create Undoc folder with config files
  */
 export class CreateProjectFiles {
-  project: CreateProjectMutation_cliCreateProject_project;
+  project: CreateProjectMutation_cliCreateProject;
 
-  constructor(project: CreateProjectMutation_cliCreateProject_project) {
+  constructor(project: CreateProjectMutation_cliCreateProject) {
     this.project = project;
   }
 
@@ -40,37 +40,40 @@ export class CreateProjectFiles {
 
   run = async (): Promise<void> => {
     const rootDir = process.cwd();
-    const undocDir = readDir(`${rootDir}/.undoc`);
 
-    const { projectTarget } = await (<any>inquirer.prompt(this.inputs));
+    try {
+      const undocDir = readDir(`${rootDir}/.undoc`);
 
-    if (!projectTarget) {
-      console.log(chalk.red(`\nerror creating project file\n`));
-      return;
+      const { projectTarget } = await (<any>inquirer.prompt(this.inputs));
+
+      if (!projectTarget) {
+        throw "error creating project file";
+      }
+
+      this.tdJson.target = projectTarget;
+
+      if (!undocDir) {
+        createDir(`${rootDir}/.undoc`);
+      }
+
+      const projectFile = await writeFile(
+        `${rootDir}/.undoc/config.json`,
+        `{"key":"${this.project.key}", "name":"${this.project.name}"}`
+      );
+
+      if (!projectFile) {
+        throw "error creating project file";
+      }
+
+      await writeFile(`${rootDir}/.undoc/td.json`, JSON.stringify(this.tdJson));
+
+      console.log(
+        chalk.green(
+          `\nSuccess! Use command 'undoc publish' to create/update documentation\n`
+        )
+      );
+    } catch (err) {
+      throw err;
     }
-
-    this.tdJson.target = projectTarget;
-
-    if (!undocDir) {
-      createDir(`${rootDir}/.undoc`);
-    }
-
-    const projectFile = await writeFile(
-      `${rootDir}/.undoc/config.json`,
-      `{"key":"${this.project.key}", "name":"${this.project.name}"}`
-    );
-
-    if (!projectFile) {
-      console.log(chalk.red(`\nerror creating project file\n`));
-      return;
-    }
-
-    await writeFile(`${rootDir}/.undoc/td.json`, JSON.stringify(this.tdJson));
-
-    console.log(
-      chalk.green(
-        `\nSuccess! Use command 'undoc publish' to create/update documentation\n`
-      )
-    );
   };
 }

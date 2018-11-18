@@ -16,25 +16,40 @@ export class Commits {
   }
 
   branch = async (): Promise<string> => {
-    const branch = await this.command("git rev-parse --abbrev-ref HEAD");
-    return branch.trim();
+    try {
+      const branch = await this.command("git rev-parse --abbrev-ref HEAD");
+      return branch.trim();
+    } catch (err) {
+      throw err;
+    }
   };
 
   initialCommit = async (): Promise<string> => {
-    const commit = await this.command("git rev-list --max-parents=0 HEAD");
-    return commit.trim();
+    try {
+      const commit = await this.command("git rev-list --max-parents=0 HEAD");
+      return commit.trim();
+    } catch (err) {
+      throw err;
+    }
   };
 
   latestCommitSha = async (): Promise<string> => {
-    const branch = await this.branch();
-    const commit = await this.command(`git rev-parse origin/${branch}`);
-    return commit.trim();
+    try {
+      const branch = await this.branch();
+      const commit = await this.command(`git rev-parse origin/${branch}`);
+      return commit.trim();
+    } catch (err) {
+      throw err;
+    }
   };
 
   fileChanges = async (sha?: string) => {
-    const newSha = await this.latestCommitSha();
-    const oldSha = sha || (await this.initialCommit());
-
-    return await this.command(`git diff --name-only ${oldSha} ${newSha}`);
+    try {
+      const newSha = await this.latestCommitSha();
+      const oldSha = sha || (await this.initialCommit());
+      return await this.command(`git diff --name-only ${oldSha} ${newSha}`);
+    } catch (err) {
+      throw err;
+    }
   };
 }

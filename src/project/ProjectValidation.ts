@@ -6,32 +6,29 @@ import { readDir, readFile } from "../utils/files";
  * Make sure Undoc is setup in valid environment
  */
 export class ProjectValidation {
-  async run(): Promise<Boolean> {
+  async run(): Promise<void> {
     const rootDir = process.cwd();
-    const undocDir = readDir(`${rootDir}/.undoc`);
 
-    if (undocDir) {
-      const existingProject = await readFile(`${rootDir}/.undoc/config.json`);
+    try {
+      const undocDir = readDir(`${rootDir}/.undoc`);
 
-      if (existingProject) {
-        console.log(
-          chalk.red(`\nError: Undoc is already setup in this directory\n`)
-        );
-        return false;
+      if (undocDir) {
+        const existingProject = await readFile(`${rootDir}/.undoc/config.json`);
+
+        if (existingProject) {
+          throw "Undoc is already setup in this directory";
+        }
       }
+
+      const gitDir = readDir(`${rootDir}/.git`);
+
+      if (!gitDir) {
+        throw "Git is required to run Undoc. Make sure git is initialized and you are in the root directory of your project.";
+      }
+
+      return;
+    } catch (err) {
+      throw err;
     }
-
-    const gitDir = readDir(`${rootDir}/.git`);
-
-    if (!gitDir) {
-      console.log(
-        chalk.red(
-          "\nError: Git is required to run Undoc. Make sure git is initialized and you are in the root directory of your project.\n"
-        )
-      );
-      return false;
-    }
-
-    return true;
   }
 }

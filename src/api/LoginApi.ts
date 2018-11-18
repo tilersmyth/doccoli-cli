@@ -19,10 +19,7 @@ export class LoginApi {
         mutation LoginMutation($email: String!, $password: String!) {
           cliLogin(email: $email, password: $password) {
             token
-            errors {
-              path
-              message
-            }
+            error
           }
         }
       `,

@@ -26,33 +26,27 @@ export class LoginCommand {
     }
   ];
 
-  handler = async (): Promise<Boolean> => {
+  handler = async (): Promise<void> => {
     console.log(chalk.green("\n\n ======*** Login to Undoc ***====== \n\n"));
 
     const values = await inquirer.prompt<LoginMutationVariables>(this.inputs);
 
-    // Validation
-    if (!values.email || !values.password) {
-      console.log(chalk.red("\nemail and password are required for login\n"));
-      return false;
-    }
-
     try {
-      const { token, errors } = await new LoginApi(values).results();
+      // Validation
+      if (!values.email || !values.password) {
+        throw "\nemail and password are required for login\n";
+      }
 
-      if (errors) {
-        errors.forEach((err: any) => {
-          console.log(`\n${chalk.red(err.message)}\n`);
-        });
-        return false;
+      const { token, error } = await new LoginApi(values).results();
+
+      if (error) {
+        throw error;
       }
 
       await keytar.setToken(token as string);
-      await console.log("\nSuccessfully logged in\n");
-      return true;
+      console.log(`\n${chalk.green("Successfully logged in")}\n`);
     } catch (err) {
-      console.log(`\n${chalk.red("Unexpected server error")}\n`);
-      return false;
+      console.log(`\n${chalk.red(err)}\n`);
     }
   };
 }

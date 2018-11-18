@@ -4,7 +4,7 @@ import * as inquirer from "inquirer";
 import { CreateProjectApi } from "../api/CreateProjectApi";
 
 import keytar from "../utils/keytar";
-import { CreateProjectMutation_cliCreateProject_project } from "../types/schema";
+import { CreateProjectMutation_cliCreateProject } from "../types/schema";
 
 /**
  * Create new project
@@ -18,26 +18,19 @@ export class CreateNewProject {
     }
   ];
 
-  run = async (): Promise<CreateProjectMutation_cliCreateProject_project | null> => {
-    const token = await keytar.getToken();
+  run = async (): Promise<CreateProjectMutation_cliCreateProject> => {
+    try {
+      const token = await keytar.getToken();
 
-    if (!token) {
-      return null;
+      const { projectName } = await (<any>inquirer.prompt(this.inputs));
+
+      const project = await new CreateProjectApi(token).results(projectName);
+
+      console.log(chalk.green(`\n${project.name} successfully created\n`));
+
+      return project;
+    } catch (err) {
+      throw err;
     }
-
-    const { projectName } = await (<any>inquirer.prompt(this.inputs));
-
-    const result = await new CreateProjectApi(token).results(projectName);
-
-    if (!result.ok) {
-      console.log(chalk.red(`\n${result.error}\n`));
-      return null;
-    }
-
-    console.log(
-      chalk.green(`\n${result.project!.name} successfully created\n`)
-    );
-
-    return result.project;
   };
 }

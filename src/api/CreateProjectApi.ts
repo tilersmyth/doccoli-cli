@@ -16,12 +16,8 @@ export class CreateProjectApi {
       query: gql`
         mutation CreateProjectMutation($name: String!) {
           cliCreateProject(name: $name) {
-            ok
-            project {
-              key
-              name
-            }
-            error
+            key
+            name
           }
         }
       `,

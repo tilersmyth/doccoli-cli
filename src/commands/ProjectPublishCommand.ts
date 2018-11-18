@@ -11,6 +11,7 @@ import { npmVersion, undocConfig } from "../utils/configFile";
  */
 export class ProjectPublishCommand {
   command = "publish";
+  aliases = "p";
   describe = "Publish project updates to docs";
 
   private inputs = [
@@ -22,24 +23,33 @@ export class ProjectPublishCommand {
   ];
 
   handler = async (): Promise<void> => {
-    const lastCommit = await new GetLastCommit().run();
-    const branch = await new Commits().branch();
-    const version = await npmVersion();
-    const config = await undocConfig();
+    try {
+      const lastCommit = await new GetLastCommit().run();
+      const commit = new Commits();
+      const version = await npmVersion();
+      const config = await undocConfig();
 
-    if (!version || !config) {
-      return;
-    }
-
-    if (!lastCommit) {
-      this.inputs[0].message = `Start new Undoc for ${
-        config.name
-      } on ${branch} @ v${version}?`;
-      const { confirm } = await (<any>inquirer.prompt(this.inputs));
-
-      if (!confirm) {
+      if (!version || !config) {
         return;
       }
+
+      if (!lastCommit) {
+        this.inputs[0].message = `Start new Undoc for ${
+          config.name
+        } on ${await commit.branch()} @ v${version}?`;
+
+        const { confirm } = await (<any>inquirer.prompt(this.inputs));
+
+        if (!confirm) {
+          return;
+        }
+
+        const initialCommit = await commit.initialCommit();
+
+        console.log(initialCommit);
+      }
+    } catch (err) {
+      console.log(`\n${chalk.red(err)}\n`);
     }
   };
 }

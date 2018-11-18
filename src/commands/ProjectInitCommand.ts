@@ -11,29 +11,31 @@ import { CreateProjectFiles } from "../project/CreateProjectFiles";
  */
 export class ProjectInitCommand {
   command = "init";
+  aliases = "i";
   describe = "Initialize new project";
 
   async handler(): Promise<void> {
-    // 1. Check user auth
-    const auth = await new ProjectUserAuth().run();
-    if (!auth) return;
+    try {
+      // 1. Check user auth
+      await new ProjectUserAuth().run();
 
-    // 2. Check project environment
-    const valiation = await new ProjectValidation().run();
-    if (!valiation) return;
+      // 2. Check project environment
+      await new ProjectValidation().run();
 
-    console.log(chalk.green("\nStarting new Undoc setup!\n"));
+      console.log(chalk.green("\nStarting new Undoc setup!\n"));
 
-    // 3. Select from existing projects
-    let project = await new SelectProjectOptions().run();
+      // 3. Select from existing projects
+      let project = await new SelectProjectOptions().run();
 
-    if (!project) {
-      // 4. Create new project
-      project = await new CreateNewProject().run();
-      if (!project) return;
+      if (!project) {
+        // 4. Create new project
+        project = await new CreateNewProject().run();
+      }
+
+      //5. Generate undoc config files
+      await new CreateProjectFiles(project).run();
+    } catch (err) {
+      console.log(`\n${chalk.red(err)}\n`);
     }
-
-    //5. Generate undoc config files
-    await new CreateProjectFiles(project).run();
   }
 }

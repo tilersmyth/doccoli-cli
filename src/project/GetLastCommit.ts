@@ -12,20 +12,14 @@ import { CliLastCommit_cliLastCommit } from "../types/schema";
  */
 export class GetLastCommit {
   run = async (): Promise<CliLastCommit_cliLastCommit | null> => {
-    const token = await keytar.getToken();
+    try {
+      const token = await keytar.getToken();
+      const config = await undocConfig();
+      const branch = await new Commits().branch();
 
-    if (!token) {
-      return null;
+      return await new LastCommitApi(token).results(config.key, branch);
+    } catch (err) {
+      throw err;
     }
-
-    const config = await undocConfig();
-
-    if (!config) {
-      return null;
-    }
-
-    const branch = await new Commits().branch();
-
-    return await new LastCommitApi(token).results(config.key, branch);
   };
 }
