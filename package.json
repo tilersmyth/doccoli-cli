@@ -21,6 +21,7 @@
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/keytar": "^4.0.1",
     "@types/node": "^10.12.6",
+    "@types/nodegit": "^0.22.5",
     "@types/yargs": "^12.0.1",
     "apollo": "^1.6.0",
     "rimraf": "^2.6.2",
@@ -37,6 +38,7 @@
     "inquirer": "^6.2.0",
     "isomorphic-fetch": "^2.2.1",
     "keytar": "^4.3.0",
+    "nodegit": "0.21.1",
     "yargs": "^12.0.2"
   }
 }

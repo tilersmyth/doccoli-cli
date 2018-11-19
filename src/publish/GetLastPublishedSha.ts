@@ -1,21 +1,20 @@
 import { LastCommitApi } from "../api/LastCommitApi";
 
-import { Commits } from "../git/Commits";
-
+import { Nodegit } from "../lib/Nodegit";
 import keytar from "../utils/keytar";
 import { undocConfig } from "../utils/configFile";
 
 import { CliLastCommit_cliLastCommit } from "../types/schema";
 
 /**
- * Get last commit that was published
+ * Get the commit sha that was most recently published
  */
-export class GetLastCommit {
+export class GetLastPublishedSha {
   run = async (): Promise<CliLastCommit_cliLastCommit | null> => {
     try {
       const token = await keytar.getToken();
       const config = await undocConfig();
-      const branch = await new Commits().branch();
+      const branch = await new Nodegit().branch();
 
       return await new LastCommitApi(token).results(config.key, branch);
     } catch (err) {

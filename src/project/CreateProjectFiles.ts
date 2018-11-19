@@ -29,8 +29,9 @@ export class CreateProjectFiles {
   ];
 
   private tdJson: any = {
-    mode: "module",
-    json: "./docs.json",
+    mode: "modules",
+    json: "./.undoc/docs.json",
+    module: "commonjs",
     excludeExternals: true,
     excludePrivate: true,
     excludeProtected: true,
