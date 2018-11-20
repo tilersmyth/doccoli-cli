@@ -1,5 +1,5 @@
 import * as nodegit from "nodegit";
-import { Nodegit } from "../lib/Nodegit";
+import { NodeGit } from "../lib/NodeGit";
 
 /**
  * Get files updated since last publish
@@ -12,7 +12,7 @@ export class GetUpdatedFiles {
   }
 
   private async handleCommits(sha: string | null) {
-    const lastCommit = await new Nodegit().lastCommit();
+    const lastCommit = await new NodeGit().lastCommit();
     return new Promise<nodegit.Commit[]>((resolve: any, reject: any) => {
       const commits: any = [];
       const eventEmitter: any = lastCommit.history();

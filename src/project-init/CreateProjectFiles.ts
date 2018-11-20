@@ -1,7 +1,7 @@
 import * as inquirer from "inquirer";
 import chalk from "chalk";
 
-import { readDir, createDir, writeFile } from "../utils/files";
+import { FileUtils } from "../utils/FileUtils";
 
 import { CreateProjectMutation_cliCreateProject } from "../types/schema";
 
@@ -32,6 +32,8 @@ export class CreateProjectFiles {
     mode: "modules",
     json: "./.undoc/docs.json",
     module: "commonjs",
+    logger: "none",
+    ignoreCompilerErrors: true,
     excludeExternals: true,
     excludePrivate: true,
     excludeProtected: true,
@@ -40,11 +42,7 @@ export class CreateProjectFiles {
   };
 
   run = async (): Promise<void> => {
-    const rootDir = process.cwd();
-
     try {
-      const undocDir = readDir(`${rootDir}/.undoc`);
-
       const { projectTarget } = await (<any>inquirer.prompt(this.inputs));
 
       if (!projectTarget) {
@@ -53,20 +51,12 @@ export class CreateProjectFiles {
 
       this.tdJson.target = projectTarget;
 
-      if (!undocDir) {
-        createDir(`${rootDir}/.undoc`);
-      }
-
-      const projectFile = await writeFile(
-        `${rootDir}/.undoc/config.json`,
+      await FileUtils.createFile(
+        ".undoc/config.json",
         `{"key":"${this.project.key}", "name":"${this.project.name}"}`
       );
 
-      if (!projectFile) {
-        throw "error creating project file";
-      }
-
-      await writeFile(`${rootDir}/.undoc/td.json`, JSON.stringify(this.tdJson));
+      await FileUtils.createFile(".undoc/td.json", JSON.stringify(this.tdJson));
 
       console.log(
         chalk.green(

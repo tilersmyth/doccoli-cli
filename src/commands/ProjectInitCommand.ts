@@ -1,10 +1,10 @@
 import chalk from "chalk";
 
-import { ProjectUserAuth } from "../project/ProjectUserAuth";
-import { CreateNewProject } from "../project/CreateNewProject";
-import { ProjectValidation } from "../project/ProjectValidation";
-import { SelectProjectOptions } from "../project/SelectProjectOptions";
-import { CreateProjectFiles } from "../project/CreateProjectFiles";
+import { ProjectUserAuth } from "../project-init/ProjectUserAuth";
+import { CreateNewProject } from "../project-init/CreateNewProject";
+import { ProjectValidation } from "../project-init/ProjectValidation";
+import { SelectProjectOptions } from "../project-init/SelectProjectOptions";
+import { CreateProjectFiles } from "../project-init/CreateProjectFiles";
 
 /**
  * Initialize new project

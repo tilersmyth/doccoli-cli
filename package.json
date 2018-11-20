@@ -20,9 +20,11 @@
     "@types/inquirer": "^0.0.43",
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/keytar": "^4.0.1",
+    "@types/mkdirp": "^0.5.2",
     "@types/node": "^10.12.6",
     "@types/nodegit": "^0.22.5",
     "@types/yargs": "^12.0.1",
+    "@types/yup": "^0.26.2",
     "apollo": "^1.6.0",
     "rimraf": "^2.6.2",
     "ts-node": "^7.0.1",
@@ -38,8 +40,10 @@
     "inquirer": "^6.2.0",
     "isomorphic-fetch": "^2.2.1",
     "keytar": "^4.3.0",
+    "mkdirp": "^0.5.1",
     "nodegit": "0.21.1",
     "typedoc": "^0.13.0",
-    "yargs": "^12.0.2"
+    "yargs": "^12.0.2",
+    "yup": "^0.26.6"
   }
 }

@@ -1,6 +1,6 @@
 import * as nodegit from "nodegit";
 
-export class Nodegit {
+export class NodeGit {
   private async repo(): Promise<nodegit.Repository> {
     try {
       const rootDir = process.cwd();

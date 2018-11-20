@@ -1,7 +1,8 @@
 import * as inquirer from "inquirer";
 
-import { Nodegit } from "../lib/Nodegit";
-import { npmVersion, undocConfig } from "../utils/configFile";
+import { NodeGit } from "../lib/NodeGit";
+import { UndocFiles } from "../utils/UndocFiles";
+import { NpmFile } from "../utils/NpmFile";
 
 /**
  * Verfify project should be published
@@ -17,9 +18,9 @@ export class NewPublishSpeedBump {
 
   run = async (): Promise<Boolean> => {
     try {
-      const commit = new Nodegit();
-      const version = await npmVersion();
-      const config = await undocConfig();
+      const commit = new NodeGit();
+      const version = await NpmFile.version();
+      const config = await UndocFiles.config();
 
       this.inputs[0].message = `Start new Undoc for ${
         config.name
