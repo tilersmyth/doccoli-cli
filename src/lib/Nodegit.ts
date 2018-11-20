@@ -27,4 +27,14 @@ export class Nodegit {
       throw err;
     }
   };
+
+  lastCommit = async (): Promise<nodegit.Commit> => {
+    try {
+      const repo = await this.repo();
+      const ref = await this.ref();
+      return await repo.getBranchCommit(ref.shorthand());
+    } catch (err) {
+      throw err;
+    }
+  };
 }
