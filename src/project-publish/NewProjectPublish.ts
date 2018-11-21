@@ -10,7 +10,6 @@ export class NewProjectPublish {
     try {
       await new NewPublishSpeedBump().run();
       const files = await new GetUpdatedFiles(null).target();
-      console.log("NEW PUBLISH");
       await new TypeDoc(files).generate();
     } catch (err) {
       throw err;

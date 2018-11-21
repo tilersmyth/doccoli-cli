@@ -58,6 +58,7 @@ export class FileUtils {
    */
   static fileExists(filePath: string): boolean {
     const root = FileUtils.rootDirectory();
-    return fs.existsSync(`${root}/${filePath}`);
+    const path = filePath.indexOf(root) === -1 ? root : "";
+    return fs.existsSync(`${path}/${filePath}`);
   }
 }

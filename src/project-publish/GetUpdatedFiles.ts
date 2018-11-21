@@ -1,5 +1,6 @@
 import * as nodegit from "nodegit";
 import { NodeGit } from "../lib/NodeGit";
+import { FileUtils } from "../utils/FileUtils";
 
 /**
  * Get files updated since last publish
@@ -49,10 +50,12 @@ export class GetUpdatedFiles {
   };
 
   private handleFiles(filesArr: string[]) {
-    // removes dupes, exclude non .ts files
+    // removes dupes, non .ts files, nonexistent paths
     return filesArr.filter(
       (e: any, i: number, a: any) =>
-        a.findIndex((f: any) => f === e) === i && e.indexOf(".ts") !== -1
+        a.findIndex((f: any) => f === e) === i &&
+        e.indexOf(".ts") !== -1 &&
+        FileUtils.fileExists(e)
     );
   }
 
