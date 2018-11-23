@@ -1,14 +1,12 @@
 import * as typedoc from "typedoc";
 import * as yup from "yup";
-import chalk from "chalk";
-import * as readline from "readline";
 
+import { TypeDocPublishOutput } from "../project-publish/TypeDocPublishOutput";
 import { FileUtils } from "../utils/FileUtils";
 import { UndocFiles } from "../utils/UndocFiles";
 
 export class TypeDoc {
   files: string[];
-  tdReviewCount: number = 1;
 
   constructor(files: string[]) {
     this.files = files;
@@ -29,35 +27,10 @@ export class TypeDoc {
     });
   }
 
-  private logger = (event: string) => {
-    if (event === "begin") {
-      console.log(chalk.white("Started TypeDoc compiling"));
-    }
-
-    if (event === "fileBegin") {
-      const count = this.tdReviewCount++;
-      const fileCount = this.files.length;
-
-      readline.clearLine(process.stdout, 0);
-      readline.cursorTo(process.stdout, 0);
-      process.stdout.write(
-        chalk.white(`Reviewing files ${(count / fileCount) * 100}%`)
-      );
-    }
-
-    if (event === "resolveBegin") {
-      console.log(chalk.white("\nResolving reflections"));
-    }
-
-    if (event === "end") {
-      console.log(chalk.white("Finished TypeDoc compiling"));
-    }
-  };
-
   converter = (application: any) => {
     return new Promise(async (resolve, reject) => {
       try {
-        application.converter.on("all", this.logger);
+        application.converter.on("all", new TypeDocPublishOutput().logger);
 
         const rootDir = FileUtils.rootDirectory();
         const done = application.generateJson(
@@ -85,9 +58,9 @@ export class TypeDoc {
 
     try {
       const app = new typedoc.Application(tdFile);
-      const json = await this.converter(app);
+      const results = await this.converter(app);
       app.converter.off("all");
-      return json;
+      return results;
     } catch (err) {
       throw err;
     }
