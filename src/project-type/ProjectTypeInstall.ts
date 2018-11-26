@@ -65,10 +65,9 @@ export class ProjectTypeInstall {
     const yarn = ProjectTypeInstall.packageMgr();
     const command = yarn ? "yarn" : "npm";
     const action = yarn ? "add" : "install";
-    return await ProjectTypeInstall.executeCommandStream(
-      command,
-      action,
-      dependency
-    );
+    await ProjectTypeInstall.executeCommandStream(command, action, dependency);
+    console.log(chalk.white("Refreshing Nodegit bindings...\n"));
+    await ProjectTypeInstall.executeCommand("npm rebuild nodegit");
+    return;
   }
 }
