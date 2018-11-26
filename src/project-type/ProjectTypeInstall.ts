@@ -2,13 +2,11 @@ import chalk from "chalk";
 
 import { exec, spawn } from "child_process";
 import { FileUtils } from "../utils/FileUtils";
-import { UndocFile } from "../utils/UndocFile";
-import { InstallProjectDepsUtils } from "./InstallProjectDepsUtils";
 
 /**
  * Install required dependencies depending on selected project type (TS only for now)
  */
-export class InstallProjectDeps {
+export class ProjectTypeInstall {
   private static packageMgr() {
     return FileUtils.fileExists("yarn.lock");
   }
@@ -52,8 +50,8 @@ export class InstallProjectDeps {
     });
   }
 
-  private static async packageExists(dependency: string): Promise<boolean> {
-    const localCheck = await InstallProjectDeps.executeCommand(
+  static async packageExists(dependency: string): Promise<boolean> {
+    const localCheck = await ProjectTypeInstall.executeCommand(
       "npm list --depth=0"
     );
 
@@ -62,29 +60,15 @@ export class InstallProjectDeps {
     return localMatches ? true : false;
   }
 
-  private static async installPackage(dependency: string): Promise<void> {
+  static async installPackage(dependency: string): Promise<void> {
     console.log(chalk.white(`Installing ${dependency} dependency`));
-    const yarn = InstallProjectDeps.packageMgr();
+    const yarn = ProjectTypeInstall.packageMgr();
     const command = yarn ? "yarn" : "npm";
     const action = yarn ? "add" : "install";
-    return await InstallProjectDeps.executeCommandStream(
+    return await ProjectTypeInstall.executeCommandStream(
       command,
       action,
       dependency
     );
-  }
-
-  async run() {
-    try {
-      const configFile = await UndocFile.config();
-      const dependencies = new InstallProjectDepsUtils(configFile.target);
-      const generator = dependencies.generator();
-      const hasGenerator = await InstallProjectDeps.packageExists(generator);
-      if (!hasGenerator) {
-        await InstallProjectDeps.installPackage(generator);
-      }
-    } catch (err) {
-      throw err;
-    }
   }
 }

@@ -5,7 +5,7 @@ import { CreateNewProject } from "../project-init/CreateNewProject";
 import { ProjectValidation } from "../project-init/ProjectValidation";
 import { SelectProjectOptions } from "../project-init/SelectProjectOptions";
 import { CreateConfigFiles } from "../project-init/CreateConfigFiles";
-import { InstallProjectDeps } from "../project-init/InstallProjectDeps";
+import { ProjectDepInstall } from "../project-init/ProjectDepInstall";
 import { ProjectDepSetup } from "../project-init/ProjectDepSetup";
 
 /**
@@ -37,8 +37,8 @@ export class ProjectInitCommand {
       // 5. Generate undoc config file
       await new CreateConfigFiles(project).run();
 
-      // 6. Install project generator
-      await new InstallProjectDeps().run();
+      // 6. Install project doc generator
+      await new ProjectDepInstall().run();
 
       // 7. Setup for generator type
       await new ProjectDepSetup().run();

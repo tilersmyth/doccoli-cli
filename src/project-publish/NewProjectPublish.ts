@@ -1,6 +1,6 @@
 import { NewPublishSpeedBump } from "./NewPublishSpeedBump";
 import { GetUpdatedFiles } from "./GetUpdatedFiles";
-import { DocGenerator } from "./DocGenerator";
+import { ProjectTypeGenerator } from "../project-type/ProjectTypeGenerator";
 
 /**
  * New project publish
@@ -10,7 +10,7 @@ export class NewProjectPublish {
     try {
       await new NewPublishSpeedBump().run();
       const files = await new GetUpdatedFiles(null).target();
-      await new DocGenerator(files).run();
+      await new ProjectTypeGenerator(files).run();
 
       // await new ParseModules().run();
     } catch (err) {
