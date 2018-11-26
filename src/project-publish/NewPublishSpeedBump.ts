@@ -1,7 +1,7 @@
 import * as inquirer from "inquirer";
 
 import { NodeGit } from "../lib/NodeGit";
-import { UndocFiles } from "../utils/UndocFiles";
+import { UndocFile } from "../utils/UndocFile";
 import { NpmFile } from "../utils/NpmFile";
 
 /**
@@ -20,7 +20,7 @@ export class NewPublishSpeedBump {
     try {
       const commit = new NodeGit();
       const version = await NpmFile.version();
-      const config = await UndocFiles.config();
+      const config = await UndocFile.config();
 
       this.inputs[0].message = `Start new Undoc for ${
         config.name

@@ -4,7 +4,9 @@ import { ProjectUserAuth } from "../project-init/ProjectUserAuth";
 import { CreateNewProject } from "../project-init/CreateNewProject";
 import { ProjectValidation } from "../project-init/ProjectValidation";
 import { SelectProjectOptions } from "../project-init/SelectProjectOptions";
-import { CreateProjectFiles } from "../project-init/CreateProjectFiles";
+import { CreateConfigFiles } from "../project-init/CreateConfigFiles";
+import { InstallProjectDeps } from "../project-init/InstallProjectDeps";
+import { ProjectDepSetup } from "../project-init/ProjectDepSetup";
 
 /**
  * Initialize new project
@@ -32,8 +34,14 @@ export class ProjectInitCommand {
         project = await new CreateNewProject().run();
       }
 
-      //5. Generate undoc config files
-      await new CreateProjectFiles(project).run();
+      // 5. Generate undoc config file
+      await new CreateConfigFiles(project).run();
+
+      // 6. Install project generator
+      await new InstallProjectDeps().run();
+
+      // 7. Setup for generator type
+      await new ProjectDepSetup().run();
     } catch (err) {
       console.log(`\n${chalk.red(err)}\n`);
     }
