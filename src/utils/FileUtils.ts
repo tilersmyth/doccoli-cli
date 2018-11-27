@@ -54,16 +54,6 @@ export class FileUtils {
   }
 
   /**
-   * Read stream for large json files
-   */
-  static readStream(filePath: string): any {
-    const root = FileUtils.rootDirectory();
-    return fs.createReadStream(`${root}/${filePath}`, {
-      encoding: "utf8"
-    });
-  }
-
-  /**
    * Return boolean depending on existence of file
    */
   static fileExists(filePath: string): boolean {
