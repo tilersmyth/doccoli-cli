@@ -42,6 +42,12 @@ export class ProjectInitCommand {
 
       // 7. Setup for generator type
       await new ProjectDepSetup().run();
+
+      console.log(
+        chalk.green(
+          `\nSuccess! Use command 'undoc publish' to create/update documentation\n`
+        )
+      );
     } catch (err) {
       console.log(`\n${chalk.red(err)}\n`);
     }

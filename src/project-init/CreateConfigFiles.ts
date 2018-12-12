@@ -1,5 +1,3 @@
-import chalk from "chalk";
-
 import { FileUtils } from "../utils/FileUtils";
 import { CreateProjectMutation_cliCreateProject } from "../types/schema";
 
@@ -22,11 +20,7 @@ export class CreateConfigFiles {
         }", "target": "typescript"}`
       );
 
-      console.log(
-        chalk.green(
-          `\nSuccess! Use command 'undoc publish' to create/update documentation\n`
-        )
-      );
+      return;
     } catch (err) {
       throw err;
     }

@@ -37,4 +37,13 @@ export class NodeGit {
       throw err;
     }
   };
+
+  getTree = async (): Promise<any> => {
+    try {
+      const lastCommit = await this.lastCommit();
+      return lastCommit.getTree();
+    } catch (err) {
+      throw err;
+    }
+  };
 }
