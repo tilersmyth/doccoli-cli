@@ -91,7 +91,8 @@ export class ProjectTypeInstall {
 
       const global = await this.packageExistsGlobal("undoc-cli");
       if (global) {
-        const path = await this.executeCommand("npm root");
+        const path = await this.executeCommand("npm root -g");
+        console.log(path);
         return `${path.trim()}/undoc`;
       }
 
