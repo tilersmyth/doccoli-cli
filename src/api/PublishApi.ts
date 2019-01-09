@@ -1,48 +1,63 @@
 import gql from "graphql-tag";
 
 import { Apollo } from "./Apollo";
+import keytar from "../utils/keytar";
+import { UndocFile } from "../utils/UndocFile";
 
 //import { CreateProjectMutation_cliCreateProject } from "../types/schema";
 
 export class PublishApi {
-  token: string;
+  file: any;
+  commit: any;
+  progress: any;
 
-  constructor(token: string) {
-    this.token = token;
+  constructor(file: any, commit: any, progress: any) {
+    this.file = file;
+    this.commit = commit;
+    this.progress = progress;
   }
 
-  async results(
-    projectId: string,
-    file: any,
-    commit: any,
-    progress: any
-  ): Promise<any> {
+  async results(): Promise<any> {
+    const token = await keytar.getToken();
+    const config = await UndocFile.config();
     const operation = {
       query: gql`
         mutation PublishMutation(
-          $projectId: String!
-          $file: ModuleFile!
+          $file: ModuleFileInput!
           $commit: ModuleCommit!
           $progress: PublishProgress!
         ) {
-          cliPublishCreate(
-            projectId: $projectId
-            file: $file
-            commit: $commit
-            progress: $progress
-          )
+          cliPublishCreate(file: $file, commit: $commit, progress: $progress) {
+            created
+            error {
+              path
+              message
+            }
+          }
         }
       `,
-      variables: { projectId, file, commit, progress },
+      variables: {
+        file: this.file,
+        commit: this.commit,
+        progress: this.progress
+      },
       context: {
         headers: {
-          Authorization: this.token
+          Authorization: token,
+          ProjectKey: config.key
         }
       }
     };
     try {
-      const { cliPublishCreate } = await new Apollo(operation).fetch();
-      return cliPublishCreate;
+      const {
+        cliPublishCreate: { created, error }
+      } = await new Apollo(operation).fetch();
+
+      if (error) {
+        throw error;
+      }
+
+      return created;
     } catch (err) {
       throw err;
     }

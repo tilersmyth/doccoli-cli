@@ -3,35 +3,45 @@ import gql from "graphql-tag";
 import { Apollo } from "./Apollo";
 
 import { MeQuery_cliMe } from "../types/schema";
+import keytar from "../utils/keytar";
 
 export class MeApi {
-  token: string;
-
-  constructor(token: string) {
-    this.token = token;
-  }
-
   async results(): Promise<MeQuery_cliMe> {
-    const operation = {
-      query: gql`
-        query MeQuery {
-          cliMe {
-            id
-            email
-            firstName
-            lastName
+    try {
+      const token = await keytar.getToken();
+      const operation = {
+        query: gql`
+          query MeQuery {
+            cliMe {
+              user {
+                id
+                email
+                firstName
+                lastName
+              }
+              error {
+                path
+                message
+              }
+            }
+          }
+        `,
+        context: {
+          headers: {
+            Authorization: token
           }
         }
-      `,
-      context: {
-        headers: {
-          Authorization: this.token
-        }
+      };
+
+      const {
+        cliMe: { user, error }
+      } = await new Apollo(operation).fetch();
+
+      if (error) {
+        throw error.message;
       }
-    };
-    try {
-      const { cliMe } = await new Apollo(operation).fetch();
-      return cliMe;
+
+      return user;
     } catch (err) {
       throw err;
     }

@@ -1,8 +1,8 @@
 import { NewPublishSpeedBump } from "./NewPublishSpeedBump";
 import { GetAllProjectFiles } from "./GetAllProjectFiles";
-import { ProjectTypeGenerator } from "../project-type/ProjectTypeGenerator";
-import { ProjectTypeParser } from "../project-type/ProjectTypeParser";
-import { PublishProjectFiles } from "./PublishProjectFiles";
+import { ProjectTypeGenerator } from "../../project-type/ProjectTypeGenerator";
+import { ProjectTypeParser } from "../../project-type/ProjectTypeParser";
+import { PublishProjectFiles } from "../PublishProjectFiles";
 
 /**
  * New project publish

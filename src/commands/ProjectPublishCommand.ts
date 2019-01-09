@@ -1,8 +1,8 @@
 import chalk from "chalk";
 
 import { GetLastPublishedSha } from "../project-publish/GetLastPublishedSha";
-import { NewProjectPublish } from "../project-publish/NewProjectPublish";
-import { ExistingProjectPublish } from "../project-publish/ExistingProjectPublish";
+import { NewProjectPublish } from "../project-publish/new-project/NewProjectPublish";
+import { ExistingProjectPublish } from "../project-publish/existing-project/ExistingProjectPublish";
 
 /**
  * Publish project

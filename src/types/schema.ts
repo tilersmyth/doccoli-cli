@@ -107,8 +107,10 @@ export interface PublishMutation {
 }
 
 export interface PublishMutationVariables {
-  file: ModuleFile;
-  sha: string;
+  projectId: string;
+  file: ModuleFileInput;
+  commit: ModuleCommit;
+  progress: PublishProgress;
 }
 
 /* tslint:disable */
@@ -118,48 +120,58 @@ export interface PublishMutationVariables {
 // START Enums and Input Objects
 //==============================================================
 
-export interface ModuleChildComment {
+export interface ModuleChildCommentInput {
   shortText?: string | null;
   text?: string | null;
 }
 
-export interface ModuleChildParameters {
-  name?: string | null;
-  type?: ModuleChildType | null;
+export interface ModuleChildParametersInput {
+  name: string;
+  type?: ModuleChildTypeInput | null;
 }
 
-export interface ModuleChildSignature {
-  name?: string | null;
-  kind?: string | null;
-  type?: ModuleChildType | null;
-  comment?: ModuleChildComment | null;
-  parameters?: ModuleChildParameters[] | null;
-  typeParameter?: ModuleChildParameters[] | null;
+export interface ModuleChildSignatureInput {
+  name: string;
+  kind: string;
+  type: ModuleChildTypeInput;
+  comment?: ModuleChildCommentInput | null;
+  parameters?: ModuleChildParametersInput[] | null;
+  typeParameter?: ModuleChildParametersInput[] | null;
 }
 
-export interface ModuleChildType {
-  type?: string | null;
+export interface ModuleChildTypeInput {
+  type: string;
   name?: string | null;
   refPath?: string | null;
-  types?: ModuleChildType[] | null;
+  types?: ModuleChildTypeInput[] | null;
 }
 
-export interface ModuleChildren {
+export interface ModuleChildrenInput {
   name: string;
-  comment?: ModuleChildComment | null;
-  children?: ModuleChildren[] | null;
-  type?: ModuleChildType | null;
-  indexSignature?: ModuleChildSignature | null;
-  getSignature?: ModuleChildSignature | null;
-  signatures?: ModuleChildSignature[] | null;
-  typeParameter?: ModuleChildParameters[] | null;
+  comment?: ModuleChildCommentInput | null;
+  children?: ModuleChildrenInput[] | null;
+  type?: ModuleChildTypeInput | null;
+  indexSignature?: ModuleChildSignatureInput | null;
+  getSignature?: ModuleChildSignatureInput | null;
+  signatures?: ModuleChildSignatureInput[] | null;
+  typeParameter?: ModuleChildParametersInput[] | null;
 }
 
-export interface ModuleFile {
+export interface ModuleCommit {
+  sha: string;
+  branch: string;
+}
+
+export interface ModuleFileInput {
   name: string;
   kind?: string | null;
-  path: boolean;
-  children?: ModuleChildren[] | null;
+  path: string;
+  children?: ModuleChildrenInput[] | null;
+}
+
+export interface PublishProgress {
+  size: number;
+  index: number;
 }
 
 //==============================================================

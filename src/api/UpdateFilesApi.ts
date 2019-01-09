@@ -1,30 +1,29 @@
 import gql from "graphql-tag";
 
 import { Apollo } from "./Apollo";
-
-import { CliLastCommit_cliLastCommit } from "../types/schema";
 import keytar from "../utils/keytar";
 import { UndocFile } from "../utils/UndocFile";
 
-export class LastCommitApi {
-  branch: string;
+export class UpdateFilesApi {
+  renames: any;
+  deletes: any;
 
-  constructor(branch: string) {
-    this.branch = branch;
+  constructor(renames: any, deletes: any) {
+    this.renames = renames || [];
+    this.deletes = deletes || [];
   }
 
-  async results(): Promise<CliLastCommit_cliLastCommit> {
+  async results(): Promise<any> {
     try {
       const token = await keytar.getToken();
       const config = await UndocFile.config();
 
       const operation = {
         query: gql`
-          query CliLastCommit($branch: String!) {
-            cliLastCommit(branch: $branch) {
-              commit {
-                sha
-                branch
+          mutation updateAndFindAll($renames: [String!], $deletes: [String!]) {
+            updateAndFindAll(renames: $renames, deletes: $deletes) {
+              files {
+                path
               }
               error {
                 path
@@ -33,7 +32,7 @@ export class LastCommitApi {
             }
           }
         `,
-        variables: { branch: this.branch },
+        variables: { renames: this.renames, deletes: this.deletes },
         context: {
           headers: {
             Authorization: token,
@@ -43,14 +42,14 @@ export class LastCommitApi {
       };
 
       const {
-        cliLastCommit: { error, commit }
+        updateAndFindAll: { files, error }
       } = await new Apollo(operation).fetch();
 
       if (error) {
-        throw error.message;
+        throw error;
       }
 
-      return commit;
+      return files;
     } catch (err) {
       throw err;
     }

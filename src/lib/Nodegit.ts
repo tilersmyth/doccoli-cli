@@ -46,4 +46,13 @@ export class NodeGit {
       throw err;
     }
   };
+
+  commitBySha = async (sha: string): Promise<nodegit.Commit> => {
+    try {
+      const repo = await this.repo();
+      return await repo.getCommit(sha);
+    } catch (err) {
+      throw err;
+    }
+  };
 }

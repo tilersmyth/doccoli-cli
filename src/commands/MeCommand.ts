@@ -2,7 +2,6 @@ import chalk from "chalk";
 
 import { MeApi } from "../api/MeApi";
 
-import keytar from "../utils/keytar";
 import { MeQuery_cliMe } from "../types/schema";
 
 /**
@@ -15,8 +14,7 @@ export class MeCommand {
 
   private async getUser(): Promise<MeQuery_cliMe> {
     try {
-      const token = await keytar.getToken();
-      return await new MeApi(token as string).results();
+      return await new MeApi().results();
     } catch (err) {
       throw err;
     }

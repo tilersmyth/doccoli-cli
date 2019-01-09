@@ -3,34 +3,44 @@ import gql from "graphql-tag";
 import { Apollo } from "./Apollo";
 
 import { UserProjectsQuery_cliUserProjects } from "../types/schema";
+import keytar from "../utils/keytar";
 
 export class FindUserProjectsApi {
-  token: string;
-
-  constructor(token: string) {
-    this.token = token;
-  }
-
   async results(): Promise<UserProjectsQuery_cliUserProjects[]> {
-    const operation = {
-      query: gql`
-        query UserProjectsQuery {
-          cliUserProjects {
-            id
-            key
-            name
+    try {
+      const token = await keytar.getToken();
+      const operation = {
+        query: gql`
+          query UserProjectsQuery {
+            cliUserProjects {
+              projects {
+                id
+                key
+                name
+              }
+              error {
+                path
+                message
+              }
+            }
+          }
+        `,
+        context: {
+          headers: {
+            Authorization: token
           }
         }
-      `,
-      context: {
-        headers: {
-          Authorization: this.token
-        }
+      };
+
+      const {
+        cliUserProjects: { projects, error }
+      } = await new Apollo(operation).fetch();
+
+      if (error) {
+        throw error;
       }
-    };
-    try {
-      const { cliUserProjects } = await new Apollo(operation).fetch();
-      return cliUserProjects;
+
+      return projects;
     } catch (err) {
       throw err;
     }

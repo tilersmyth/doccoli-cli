@@ -1,5 +1,5 @@
-import { NodeGit } from "../lib/NodeGit";
-import { FileUtils } from "../utils/FileUtils";
+import { NodeGit } from "../../lib/NodeGit";
+import { FileUtils } from "../../utils/FileUtils";
 
 /**
  * Get all project files for new publish

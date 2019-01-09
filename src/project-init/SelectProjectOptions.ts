@@ -3,7 +3,6 @@ import * as inquirer from "inquirer";
 
 import { FindUserProjectsApi } from "../api/FindUserProjectsApi";
 
-import keytar from "../utils/keytar";
 import { CreateProjectMutation_cliCreateProject } from "../types/schema";
 
 /**
@@ -11,11 +10,7 @@ import { CreateProjectMutation_cliCreateProject } from "../types/schema";
  */
 export class SelectProjectOptions {
   private async getProjects() {
-    const token = await keytar.getToken();
-    if (!token) {
-      return;
-    }
-    return await new FindUserProjectsApi(token).results();
+    return await new FindUserProjectsApi().results();
   }
 
   private inputs = [

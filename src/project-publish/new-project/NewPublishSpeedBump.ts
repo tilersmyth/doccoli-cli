@@ -1,8 +1,8 @@
 import * as inquirer from "inquirer";
 
-import { NodeGit } from "../lib/NodeGit";
-import { UndocFile } from "../utils/UndocFile";
-import { NpmFile } from "../utils/NpmFile";
+import { NodeGit } from "../../lib/NodeGit";
+import { UndocFile } from "../../utils/UndocFile";
+import { NpmFile } from "../../utils/NpmFile";
 
 /**
  * Verfify project should be published

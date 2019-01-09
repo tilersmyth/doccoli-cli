@@ -3,34 +3,44 @@ import gql from "graphql-tag";
 import { Apollo } from "./Apollo";
 
 import { CreateProjectMutation_cliCreateProject } from "../types/schema";
+import keytar from "../utils/keytar";
 
 export class CreateProjectApi {
-  token: string;
-
-  constructor(token: string) {
-    this.token = token;
-  }
-
   async results(name: string): Promise<CreateProjectMutation_cliCreateProject> {
-    const operation = {
-      query: gql`
-        mutation CreateProjectMutation($name: String!) {
-          cliCreateProject(name: $name) {
-            key
-            name
+    try {
+      const token = await keytar.getToken();
+      const operation = {
+        query: gql`
+          mutation CreateProjectMutation($name: String!) {
+            cliCreateProject(name: $name) {
+              project {
+                key
+                name
+              }
+              error {
+                path
+                message
+              }
+            }
+          }
+        `,
+        variables: { name },
+        context: {
+          headers: {
+            Authorization: token
           }
         }
-      `,
-      variables: { name },
-      context: {
-        headers: {
-          Authorization: this.token
-        }
+      };
+
+      const {
+        cliCreateProject: { project, error }
+      } = await new Apollo(operation).fetch();
+
+      if (error) {
+        throw error.message;
       }
-    };
-    try {
-      const { cliCreateProject } = await new Apollo(operation).fetch();
-      return cliCreateProject;
+
+      return project;
     } catch (err) {
       throw err;
     }

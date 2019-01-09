@@ -16,6 +16,8 @@ export class ProjectUserAuth {
 
         await new LoginCommand().handler();
       }
+
+      return;
     } catch (err) {
       throw err;
     }
