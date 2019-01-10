@@ -27,7 +27,7 @@ export class ExistingProjectPublish {
         this.commit.sha
       ).run();
 
-      // await new ProjectTypeGenerator(files).run();
+      await new ProjectTypeGenerator(files).run();
 
       const updates = await new GetLineUpdates(update).run();
 

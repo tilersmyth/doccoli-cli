@@ -5,6 +5,7 @@
   "main": "dist/bin.js",
   "license": "MIT",
   "scripts": {
+    "clean": "./clean-deps.sh",
     "build": "rimraf ./dist && tsc",
     "start": "ts-node src/bin.ts",
     "schema:download": "apollo schema:download --endpoint=http://localhost:4000",

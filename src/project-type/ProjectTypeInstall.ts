@@ -18,6 +18,7 @@ export class ProjectTypeInstall {
     args: string[]
   ) {
     return new Promise<void>((resolve, reject) => {
+      console.log(action, dependency, ...args);
       const stream = spawn(command, [action, dependency, ...args], {
         stdio: "pipe"
       });
@@ -93,7 +94,7 @@ export class ProjectTypeInstall {
       if (global) {
         const path = await this.executeCommand("npm root -g");
         console.log(path);
-        return `${path.trim()}/undoc`;
+        return `${path.trim()}/undoc-cli`;
       }
 
       throw "Unable to locate Undoc locally or globally via NPM";
