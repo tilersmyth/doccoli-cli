@@ -9,7 +9,7 @@ export class ProjectTypeParser {
       const configFile = await UndocFile.config();
       switch (configFile.target) {
         case "typescript":
-          return await require("@undoc/ts-parse").parse();
+          return await require("@undoc/ts-parse").parseNew();
         default:
           throw "invalid target type";
       }

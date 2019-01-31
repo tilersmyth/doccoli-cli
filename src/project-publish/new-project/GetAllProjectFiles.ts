@@ -1,33 +1,22 @@
-import { NodeGit } from "../../lib/NodeGit";
-import { FileUtils } from "../../utils/FileUtils";
+import { IsoGit } from "../../lib/IsoGit";
 
 /**
  * Get all project files for new publish
  */
 export class GetAllProjectFiles {
-  private walkTree(tree: any): Promise<string[]> {
-    const walker = tree.walk();
-    return new Promise((resolve, reject) => {
-      try {
-        const paths: string[] = [];
-        walker.on("entry", (entry: any) => {
-          if (entry.path().startsWith("src/")) {
-            const base = FileUtils.rootDirectory();
-            paths.push(`${base}/${entry.path()}`);
-          }
-        });
-        walker.on("end", () => resolve(paths));
-        walker.start();
-      } catch (err) {
-        reject(err);
-      }
-    });
+  private async files() {
+    try {
+      const iso = new IsoGit();
+      const files = await iso.git().listFiles({ dir: IsoGit.dir });
+      return files.filter((file: string) => file.startsWith("src/"));
+    } catch (err) {
+      throw err;
+    }
   }
 
   target = async (): Promise<string[]> => {
     try {
-      const tree = await new NodeGit().getTree();
-      return await this.walkTree(tree);
+      return await this.files();
     } catch (err) {
       throw err;
     }

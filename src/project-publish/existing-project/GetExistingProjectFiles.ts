@@ -1,5 +1,11 @@
 import { GetUpdatedFiles } from "./GetUpdatedFiles";
 import { UpdateFilesApi } from "../../api/UpdateFilesApi";
+import { GetModifiedFileCommits } from "./GetModifiedFileCommits";
+
+interface ModifiedFiles {
+  path: string;
+  commits?: string[];
+}
 
 /**
  * Get existing project files - including those that are updated
@@ -11,50 +17,36 @@ export class GetExistingProjectFiles {
     this.sha = sha;
   }
 
-  private updatedFiles(modifiedFiles: any, trackedFiles: any) {
-    return trackedFiles.reduce(
-      (acc: any, file: any) =>
-        modifiedFiles.find((f: any) => f.path === file.path)
-          ? [...acc, file.path]
-          : acc,
-      []
-    );
-  }
+  run = async (): Promise<{
+    modified: ModifiedFiles[];
+    all: string[];
+  }> => {
+    const files = await new GetUpdatedFiles(this.sha).walk();
 
-  private updatedFilesBySha(modifiedFiles: any, trackedFiles: any) {
-    return modifiedFiles.reduce((acc: any, file: any) => {
-      if (trackedFiles.indexOf(file.path) > -1) {
-        const index = acc.findIndex((val: any) => val.sha === file.sha);
-
-        index > -1
-          ? acc[index].files.push(file.path)
-          : acc.push({ sha: file.sha, files: [file.path] });
-      }
-      return acc;
-    }, []);
-  }
-
-  run = async (): Promise<{ update: []; files: [] }> => {
-    const files = await new GetUpdatedFiles(this.sha).target();
-
-    // no modified files
-    if (files[3].length === 0) {
-      return { update: [], files: files[1] };
+    // If no deletions and no modified files
+    if (files.deleted.length === 0 && files.modified.length === 0) {
+      return { modified: [], all: files.added };
     }
 
-    const trackedFiles = await new UpdateFilesApi(files[0], files[2]).results();
-    const updatedFiles = this.updatedFiles(files[3], trackedFiles);
+    // Files modified locally that exist remotely (tracked)
+    const modifiedTrackedFiles = await new UpdateFilesApi(
+      files.modified,
+      files.deleted
+    ).results();
 
-    // no tracked files have been updated
-    if (updatedFiles.length === 0) {
-      return { update: [], files: files[1] };
+    // Merge added and modified for JSON generation (while keeping another list with modified tracked)
+    const allFiles = [...files.added, ...files.modified];
+
+    // no tracked files have been updated, return added
+    if (modifiedTrackedFiles.length === 0) {
+      return { modified: [], all: allFiles };
     }
 
-    // add to file paths for generator
-    files[1] = [...files[1], ...updatedFiles];
+    const modifiedFiles = await new GetModifiedFileCommits(
+      this.sha,
+      modifiedTrackedFiles
+    ).run();
 
-    const updatedFilesBySha = this.updatedFilesBySha(files[3], updatedFiles);
-
-    return { update: updatedFilesBySha, files: files[1] };
+    return { modified: modifiedFiles, all: allFiles };
   };
 }

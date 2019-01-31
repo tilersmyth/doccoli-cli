@@ -1,6 +1,6 @@
 import * as inquirer from "inquirer";
 
-import { NodeGit } from "../../lib/NodeGit";
+import { IsoGit } from "../../lib/IsoGit";
 import { UndocFile } from "../../utils/UndocFile";
 import { NpmFile } from "../../utils/NpmFile";
 
@@ -18,13 +18,18 @@ export class NewPublishSpeedBump {
 
   run = async (): Promise<Boolean> => {
     try {
-      const commit = new NodeGit();
       const version = await NpmFile.version();
       const config = await UndocFile.config();
 
+      const iso = new IsoGit();
+      const branch = await iso.git().currentBranch({
+        dir: IsoGit.dir,
+        fullname: false
+      });
+
       this.inputs[0].message = `Start new Undoc for ${
         config.name
-      } on ${await commit.branch()} @ v${version}?`;
+      } on ${await branch} @ v${version}?`;
 
       const { confirm } = await (<any>inquirer.prompt(this.inputs));
 

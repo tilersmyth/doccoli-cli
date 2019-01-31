@@ -9,7 +9,7 @@ export class FileUtils {
   /**
    * Returns root directory of project
    */
-  static rootDirectory() {
+  static root() {
     return process.cwd();
   }
 
@@ -18,7 +18,7 @@ export class FileUtils {
    */
   static createDirectories(directory: string) {
     return new Promise((ok, fail) => {
-      const root = FileUtils.rootDirectory();
+      const root = FileUtils.root();
       return mkdirp(`${root}/${directory}`, (err: any) =>
         err ? fail(err) : ok()
       );
@@ -45,7 +45,7 @@ export class FileUtils {
    * Reads everything from a given file and returns its content as a string
    */
   static async readFile(filePath: string): Promise<string> {
-    const root = FileUtils.rootDirectory();
+    const root = FileUtils.root();
     return new Promise<string>((ok, fail) => {
       fs.readFile(`${root}/${filePath}`, (err, data) =>
         err ? fail(err) : ok(data.toString())
@@ -57,7 +57,7 @@ export class FileUtils {
    * Return boolean depending on existence of file
    */
   static fileExists(filePath: string): boolean {
-    const root = FileUtils.rootDirectory();
+    const root = FileUtils.root();
     const path = filePath.indexOf(root) === -1 ? root : "";
     return fs.existsSync(`${path}/${filePath}`);
   }

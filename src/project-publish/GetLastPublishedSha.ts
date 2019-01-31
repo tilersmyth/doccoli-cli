@@ -1,6 +1,6 @@
 import { LastCommitApi } from "../api/LastCommitApi";
 
-import { NodeGit } from "../lib/NodeGit";
+import { IsoGit } from "../lib/IsoGit";
 
 import { CliLastCommit_cliLastCommit } from "../types/schema";
 
@@ -10,7 +10,16 @@ import { CliLastCommit_cliLastCommit } from "../types/schema";
 export class GetLastPublishedSha {
   run = async (): Promise<CliLastCommit_cliLastCommit | null> => {
     try {
-      const branch = await new NodeGit().branch();
+      const iso = new IsoGit();
+      const branch = await iso.git().currentBranch({
+        dir: IsoGit.dir,
+        fullname: false
+      });
+
+      if (!branch) {
+        throw "Unable to determine current branch";
+      }
+
       return await new LastCommitApi(branch).results();
     } catch (err) {
       throw err;

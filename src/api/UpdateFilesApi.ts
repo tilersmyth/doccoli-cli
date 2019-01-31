@@ -5,12 +5,12 @@ import keytar from "../utils/keytar";
 import { UndocFile } from "../utils/UndocFile";
 
 export class UpdateFilesApi {
-  renames: any;
-  deletes: any;
+  modified: string[];
+  deletes: string[];
 
-  constructor(renames: any, deletes: any) {
-    this.renames = renames || [];
-    this.deletes = deletes || [];
+  constructor(modified: string[], deletes: string[]) {
+    this.modified = modified;
+    this.deletes = deletes;
   }
 
   async results(): Promise<any> {
@@ -20,8 +20,8 @@ export class UpdateFilesApi {
 
       const operation = {
         query: gql`
-          mutation updateAndFindAll($renames: [String!], $deletes: [String!]) {
-            updateAndFindAll(renames: $renames, deletes: $deletes) {
+          mutation updateAndFindAll($modified: [String!], $deletes: [String!]) {
+            updateAndFindAll(modified: $modified, deletes: $deletes) {
               files {
                 path
               }
@@ -32,7 +32,7 @@ export class UpdateFilesApi {
             }
           }
         `,
-        variables: { renames: this.renames, deletes: this.deletes },
+        variables: { modified: this.modified, deletes: this.deletes },
         context: {
           headers: {
             Authorization: token,
