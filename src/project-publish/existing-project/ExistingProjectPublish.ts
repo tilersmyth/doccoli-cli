@@ -1,8 +1,7 @@
 import { CliLastCommit_cliLastCommit } from "../../types/schema";
 import { IsoGit } from "../../lib/IsoGit";
-import { GetExistingProjectFiles } from "./GetExistingProjectFiles";
+import { ExistingProjectFiles } from "./ExistingProjectFiles";
 import { ProjectTypeGenerator } from "../../project-type/ProjectTypeGenerator";
-import { GetModifiedFileCommits } from "./GetModifiedFileCommits";
 
 /**
  * Existing project publish
@@ -33,19 +32,15 @@ export class ExistingProjectPublish {
         return;
       }
 
-      const projectFiles = await new GetExistingProjectFiles(
-        this.commit.sha
-      ).run();
+      const projectFiles = new ExistingProjectFiles(this.commit.sha);
 
-      await new ProjectTypeGenerator(
-        projectFiles.all,
-        projectFiles.modified
-      ).run();
+      const { all, modified } = await projectFiles.get();
 
-      const modifiedFilesWithCommits = await new GetModifiedFileCommits(
-        this.commit.sha,
-        projectFiles.modified
-      ).run();
+      await new ProjectTypeGenerator(all, modified).run();
+
+      const modifiedFilesWithCommits = await projectFiles.getModifiedWithCommits(
+        modified
+      );
 
       console.log(modifiedFilesWithCommits);
 
