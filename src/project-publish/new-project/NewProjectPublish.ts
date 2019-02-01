@@ -13,7 +13,7 @@ export class NewProjectPublish {
       await new NewPublishSpeedBump().run();
       const files = await new GetAllProjectFiles().target();
 
-      await new ProjectTypeGenerator(files).run();
+      await new ProjectTypeGenerator(files, []).run();
       const results = await new ProjectTypeParser().run();
       await new PublishProjectFiles(results).run();
     } catch (err) {

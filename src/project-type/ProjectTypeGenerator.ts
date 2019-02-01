@@ -5,9 +5,11 @@ import { UndocFile } from "../utils/UndocFile";
  */
 export class ProjectTypeGenerator {
   files: string[];
+  modifiedFiles: string[];
 
-  constructor(files: string[]) {
+  constructor(files: string[], modifiedFiles: string[]) {
     this.files = files;
+    this.modifiedFiles = modifiedFiles;
   }
 
   async run() {
@@ -15,7 +17,10 @@ export class ProjectTypeGenerator {
       const configFile = await UndocFile.config();
       switch (configFile.target) {
         case "typescript":
-          return await require("@undoc/ts-gen").generate(this.files);
+          return await require("@undoc/ts-gen").generate(
+            this.files,
+            this.modifiedFiles
+          );
         default:
           throw "invalid target type";
       }

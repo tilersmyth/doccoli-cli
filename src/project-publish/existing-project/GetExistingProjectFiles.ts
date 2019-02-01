@@ -1,6 +1,5 @@
 import { GetUpdatedFiles } from "./GetUpdatedFiles";
 import { UpdateFilesApi } from "../../api/UpdateFilesApi";
-import { GetModifiedFileCommits } from "./GetModifiedFileCommits";
 
 interface ModifiedFiles {
   path: string;
@@ -18,14 +17,14 @@ export class GetExistingProjectFiles {
   }
 
   run = async (): Promise<{
-    modified: ModifiedFiles[];
     all: string[];
+    modified: string[];
   }> => {
     const files = await new GetUpdatedFiles(this.sha).walk();
 
     // If no deletions and no modified files
     if (files.deleted.length === 0 && files.modified.length === 0) {
-      return { modified: [], all: files.added };
+      return { all: files.added, modified: [] };
     }
 
     // Files modified locally that exist remotely (tracked)
@@ -39,14 +38,11 @@ export class GetExistingProjectFiles {
 
     // no tracked files have been updated, return added
     if (modifiedTrackedFiles.length === 0) {
-      return { modified: [], all: allFiles };
+      return { all: allFiles, modified: [] };
     }
 
-    const modifiedFiles = await new GetModifiedFileCommits(
-      this.sha,
-      modifiedTrackedFiles
-    ).run();
+    const modified = modifiedTrackedFiles.map((file: any) => file.path);
 
-    return { modified: modifiedFiles, all: allFiles };
+    return { all: allFiles, modified };
   };
 }

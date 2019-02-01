@@ -4,16 +4,16 @@ import { IsoGit } from "../../lib/IsoGit";
 
 interface ModifiedFiles {
   path: string;
-  commits?: string[];
+  commits: string[];
 }
 
 export class GetModifiedFileCommits {
   isoGit: IsoGit;
   sha: string;
-  modifiedFiles: ModifiedFiles[];
+  modifiedFiles: string[];
   commitsThatMatter: string[] = [];
 
-  constructor(sha: string, modifiedFiles: ModifiedFiles[]) {
+  constructor(sha: string, modifiedFiles: string[]) {
     this.isoGit = new IsoGit();
     this.sha = sha;
     this.modifiedFiles = modifiedFiles;
@@ -35,7 +35,8 @@ export class GetModifiedFileCommits {
     }
   }
 
-  private mapFiles = async (file: ModifiedFiles) => {
+  private mapFiles = async (file: string): Promise<ModifiedFiles> => {
+    const fileObj: ModifiedFiles = { path: file, commits: [] };
     const git = this.isoGit.git();
     const commits = this.commitsThatMatter;
     let lastFileSha = null;
@@ -44,19 +45,18 @@ export class GetModifiedFileCommits {
       const fileObject = await git.readObject({
         dir: IsoGit.dir,
         oid: commit,
-        filepath: file.path
+        filepath: fileObj.path
       });
 
       if (fileObject.oid !== lastFileSha) {
         if (lastFileSha !== null) {
-          file.commits = file.commits || [];
-          file.commits.unshift(lastCommitSha!);
+          fileObj.commits.unshift(lastCommitSha!);
         }
         lastFileSha = fileObject.oid;
       }
       lastCommitSha = commit;
     }
-    return file;
+    return fileObj;
   };
 
   async run() {
@@ -68,6 +68,6 @@ export class GetModifiedFileCommits {
     this.commitsThatMatter = this.findCommitsThatMatter(commits);
     console.log(`${this.commitsThatMatter.length} commits since last publish`);
 
-    return Promise.all(this.modifiedFiles.map(this.mapFiles));
+    return Promise.all<ModifiedFiles>(this.modifiedFiles.map(this.mapFiles));
   }
 }
