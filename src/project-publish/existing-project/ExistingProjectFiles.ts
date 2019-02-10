@@ -3,11 +3,7 @@ import * as git from "isomorphic-git";
 import { GetUpdatedFiles } from "./GetUpdatedFiles";
 import { UpdateFilesApi } from "../../api/UpdateFilesApi";
 import { IsoGit } from "../../lib/IsoGit";
-
-interface ModifiedFiles {
-  path: string;
-  commits: string[];
-}
+import { ModifiedFile } from "./types";
 
 /**
  * Get existing project files - including those that are updated
@@ -26,6 +22,7 @@ export class ExistingProjectFiles {
     try {
       const shas: string[] = [];
       for (const commit of commits) {
+        // switch back after
         shas.push(commit.oid!);
         if (commit.oid === this.sha) {
           return shas.reverse();
@@ -38,12 +35,12 @@ export class ExistingProjectFiles {
     }
   }
 
-  private mapFiles = async (file: string): Promise<ModifiedFiles> => {
-    const fileObj: ModifiedFiles = { path: file, commits: [] };
+  private mapFiles = async (file: string): Promise<ModifiedFile> => {
+    const fileObj: ModifiedFile = { path: file, oldOid: "", newOid: "" };
     const git = this.isoGit.git();
     const commits = this.commitsThatMatter;
     let lastFileSha = null;
-    let lastCommitSha = null;
+
     for (const commit of commits) {
       const fileObject = await git.readObject({
         dir: IsoGit.dir,
@@ -53,12 +50,18 @@ export class ExistingProjectFiles {
 
       if (fileObject.oid !== lastFileSha) {
         if (lastFileSha !== null) {
-          fileObj.commits.unshift(lastCommitSha!);
+          // Set to initial oid
+          if (!fileObj.oldOid) {
+            fileObj.oldOid = lastFileSha;
+          }
+
+          // Keep seting until most recent oid is set
+          fileObj.newOid = fileObject.oid;
         }
         lastFileSha = fileObject.oid;
       }
-      lastCommitSha = commit;
     }
+
     return fileObj;
   };
 
@@ -101,6 +104,6 @@ export class ExistingProjectFiles {
     this.commitsThatMatter = this.findCommitsThatMatter(commits);
     console.log(`${this.commitsThatMatter.length} commits since last publish`);
 
-    return Promise.all<ModifiedFiles>(modifiedFiles.map(this.mapFiles));
+    return Promise.all<ModifiedFile>(modifiedFiles.map(this.mapFiles));
   };
 }

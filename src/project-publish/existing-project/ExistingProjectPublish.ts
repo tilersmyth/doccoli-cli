@@ -2,6 +2,7 @@ import { CliLastCommit_cliLastCommit } from "../../types/schema";
 import { IsoGit } from "../../lib/IsoGit";
 import { ExistingProjectFiles } from "./ExistingProjectFiles";
 import { ProjectTypeGenerator } from "../../project-type/ProjectTypeGenerator";
+import { ExistingProjectUpdates } from "./ExistingProjectUpdates";
 
 /**
  * Existing project publish
@@ -15,8 +16,6 @@ export class ExistingProjectPublish {
 
   run = async (): Promise<void> => {
     try {
-      // Publish up to date
-
       const git = new IsoGit().git();
       const lastCommit = await git.fetch({
         dir: IsoGit.dir,
@@ -38,11 +37,15 @@ export class ExistingProjectPublish {
 
       await new ProjectTypeGenerator(all, modified).run();
 
-      const modifiedFilesWithCommits = await projectFiles.getModifiedWithCommits(
+      const modifiedFilesByCommits = await projectFiles.getModifiedWithCommits(
         modified
       );
 
-      console.log(modifiedFilesWithCommits);
+      const fileUpdates = await new ExistingProjectUpdates(
+        modifiedFilesByCommits
+      ).files();
+
+      console.log(fileUpdates);
 
       // Next: make updates on modified files
     } catch (err) {
