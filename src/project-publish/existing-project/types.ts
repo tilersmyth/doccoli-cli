@@ -4,15 +4,15 @@ export interface ModifiedFile {
   newOid: string;
 }
 
-export interface ColDetail {
-  colNo: number;
-  colSize: number;
+export interface ColChunk {
+  start: number;
+  end: number;
 }
 
 export interface LineDiffDetail {
   type: string;
   lineNo: number;
-  cols: ColDetail[];
+  cols: ColChunk[];
   addedContent: string;
   removedContent: string;
 }

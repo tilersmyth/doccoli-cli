@@ -1,5 +1,5 @@
 import * as jsDiff from "diff";
-import { ColDetail } from "../../types";
+import { ColChunk } from "../../types";
 
 export class ColDiff {
   oldContent: string;
@@ -14,8 +14,9 @@ export class ColDiff {
     try {
       const diffChars = jsDiff.diffChars(this.oldContent, this.newContent);
 
-      const untouchedCols: ColDetail[] = [];
-      let charInc: number = 0;
+      // Chunks of characters that are NO AFFECTED by update
+      const colChunks: ColChunk[] = [];
+      let charInc: number = 1;
       let addedContent: string = "";
       let removedContent: string = "";
       let isModified: boolean = false;
@@ -25,11 +26,21 @@ export class ColDiff {
           throw "Diff string count undefined";
         }
 
-        // Increment no action columns if has content
+        // Increment no action columns if not whitespace
         if (!char.added && !char.removed && char.value.trim()) {
-          untouchedCols.push({
-            colNo: charInc,
-            colSize: char.count
+          if (colChunks.length > 0) {
+            const chunkIndex = colChunks.findIndex(
+              (chunk: any) => charInc === chunk.end
+            );
+
+            if (chunkIndex > -1) {
+              colChunks[chunkIndex].end = char.count + charInc;
+              continue;
+            }
+          }
+          colChunks.push({
+            start: charInc,
+            end: char.count + charInc
           });
         }
 
@@ -49,7 +60,7 @@ export class ColDiff {
       }
 
       return {
-        cols: untouchedCols,
+        cols: colChunks,
         isModified,
         removedContent,
         addedContent

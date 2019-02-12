@@ -3,6 +3,7 @@ import { IsoGit } from "../../lib/IsoGit";
 import { ExistingProjectFiles } from "./ExistingProjectFiles";
 import { ProjectTypeGenerator } from "../../project-type/ProjectTypeGenerator";
 import { ExistingProjectUpdates } from "./ExistingProjectUpdates";
+import { ProjectTypeParser } from "../../project-type/ProjectTypeParser";
 
 /**
  * Existing project publish
@@ -45,7 +46,7 @@ export class ExistingProjectPublish {
         modifiedFilesByCommits
       ).files();
 
-      console.log(fileUpdates);
+      const results = await new ProjectTypeParser(fileUpdates).run();
 
       // Next: make updates on modified files
     } catch (err) {
