@@ -15,47 +15,42 @@ import PublishEvents from "../../events/publish/Events";
  */
 export class ExistingProjectPublish {
   publishStatus: any;
+  iso: IsoGit;
 
   constructor(publishStatus: any) {
     this.publishStatus = publishStatus;
+    this.iso = new IsoGit();
   }
 
-  private statusEvent = async (commit: any) => {
-    const branch = await new IsoGit().git().currentBranch({
-      dir: IsoGit.dir,
-      fullname: false
-    });
+  private static shortSha(sha: string) {
+    return sha.substring(0, 6);
+  }
 
-    const sha = commit.fetchHead.substring(0, 6);
+  private statusEvent = async (commit: string) => {
+    const branch = await this.iso.branch();
+    const sha = ExistingProjectPublish.shortSha(commit);
     const context = `Publishing update [${branch} ${sha}]`;
     PublishEvents.emitter("existing_publish", context);
   };
 
   run = async (): Promise<void> => {
     try {
-      const git = new IsoGit().git();
-      const lastCommit = await git.fetch({
-        dir: IsoGit.dir,
-        depth: 1
-      });
-
-      if (!lastCommit.fetchHead) {
-        throw "Unable to determine current commit";
-      }
+      const lastCommitSha = await this.iso.lastCommitSha();
 
       const commit = this.publishStatus.commit;
 
-      if (lastCommit.fetchHead === commit.sha) {
+      if (lastCommitSha === commit.sha) {
         const context = "Project up-to-date. Nothing to do.";
         PublishEvents.emitter("noaction_up_to_date", context);
         return;
       }
 
-      await this.statusEvent(lastCommit);
+      await this.statusEvent(lastCommitSha);
 
       const projectFiles = new ExistingProjectFiles(commit.sha);
 
-      const lastCommitPub = commit.sha.substring(0, 6);
+      const lastCommitPub = ExistingProjectPublish.shortSha(commit.sha);
+
       PublishEvents.emitter(
         "existing_last_commit",
         `Last published: [${lastCommitPub}] ${moment(

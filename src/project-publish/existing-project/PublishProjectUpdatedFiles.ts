@@ -13,24 +13,10 @@ export class PublishProjectUpdatedFiles {
     this.iso = new IsoGit();
   }
 
-  private async lastCommit() {
-    return await this.iso.git().fetch({
-      dir: IsoGit.dir,
-      depth: 1
-    });
-  }
-
-  private async branch() {
-    return await this.iso.git().currentBranch({
-      dir: IsoGit.dir,
-      fullname: false
-    });
-  }
-
   run = async (): Promise<void> => {
     try {
-      const commit = await this.lastCommit();
-      const branch = await this.branch();
+      const commit = await this.iso.lastCommitSha();
+      const branch = await this.iso.branch();
 
       for (const files of this.files) {
         console.log(files.file);
@@ -39,7 +25,7 @@ export class PublishProjectUpdatedFiles {
         }
         // await new PublishApi(
         //   this.files[i],
-        //   { sha: commit.fetchHead, branch },
+        //   { sha: commit, branch },
         //   { size: this.files.length, index: i + 1 }
         // ).results();
       }

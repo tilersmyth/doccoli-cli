@@ -17,6 +17,20 @@ export class IsoGit {
     });
   }
 
+  async lastCommitSha(): Promise<string> {
+    try {
+      const commits = await git.log({ dir: IsoGit.dir, depth: 1 });
+
+      if (!commits[0] || !commits[0].oid) {
+        throw "Unable to get last commit";
+      }
+
+      return commits[0].oid;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   fs() {
     return fs;
   }
