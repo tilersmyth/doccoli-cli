@@ -13,9 +13,9 @@ export class NewProjectPublish {
   run = async (): Promise<void> => {
     try {
       await new NewPublishSpeedBump().run();
-      const files = await new GetAllProjectFiles().target();
-      await new ProjectTypeGenerator(files, []).run();
-      const results = await new ProjectTypeParser().run();
+      const newFiles = await new GetAllProjectFiles().target();
+      await new ProjectTypeGenerator(newFiles, []).run();
+      const results = await new ProjectTypeParser(newFiles).run();
       PublishEvents.emitter("push_new_publish", "Pushing nodes to server");
       await new PublishProjectFiles(results).run();
       PublishEvents.emitter("complete_new_publish", "Publish successful!");

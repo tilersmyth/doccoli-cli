@@ -58,26 +58,29 @@ export class ExistingProjectPublish {
         ).fromNow()}`
       );
 
-      const { all, modified } = await projectFiles.get();
+      const { addedFiles, modifiedFiles } = await projectFiles.get();
 
       PublishEvents.emitter(
         "existing_publish_modified",
-        `${modified.length} tracked files modified`
+        `${modifiedFiles.length} tracked files modified`
       );
 
       PublishEvents.emitter("isogit_init", "Reviewing Git for file changes");
 
       const modifiedFilesByCommits = await projectFiles.getModifiedWithCommits(
-        modified
+        modifiedFiles
       );
 
-      const fileUpdates = await new ExistingProjectUpdates(
+      const modifiedFileUpdateDetail = await new ExistingProjectUpdates(
         modifiedFilesByCommits
       ).files();
 
-      await new ProjectTypeGenerator(all, modified).run();
+      await new ProjectTypeGenerator(addedFiles, modifiedFiles).run();
 
-      const results = await new ProjectTypeParser(fileUpdates).run();
+      const results = await new ProjectTypeParser(
+        addedFiles,
+        modifiedFileUpdateDetail
+      ).run();
 
       console.log(results);
 

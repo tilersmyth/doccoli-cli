@@ -21,14 +21,14 @@ export class ExistingProjectFiles {
   }
 
   get = async (): Promise<{
-    all: string[];
-    modified: string[];
+    addedFiles: string[];
+    modifiedFiles: string[];
   }> => {
     const files = await new GetUpdatedFiles(this.sha).walk();
 
     // If no deletions and no modified files
     if (files.deleted.length === 0 && files.modified.length === 0) {
-      return { all: files.added, modified: [] };
+      return { addedFiles: files.added, modifiedFiles: [] };
     }
 
     // Files modified locally that exist remotely (tracked)
@@ -37,17 +37,14 @@ export class ExistingProjectFiles {
       files.deleted
     ).results();
 
-    // Merge added and modified for JSON generation (while keeping another list with modified tracked)
-    const allFiles = [...files.added, ...files.modified];
-
     // no tracked files have been updated, return added
     if (modifiedTrackedFiles.length === 0) {
-      return { all: allFiles, modified: [] };
+      return { addedFiles: files.added, modifiedFiles: [] };
     }
 
-    const modified = modifiedTrackedFiles.map((file: any) => file.path);
+    const modifiedFiles = modifiedTrackedFiles.map((file: any) => file.path);
 
-    return { all: allFiles, modified };
+    return { addedFiles: files.added, modifiedFiles };
   };
 
   private findCommitsThatMatter(commits: git.CommitDescription[]): string[] {

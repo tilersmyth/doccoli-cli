@@ -5,11 +5,11 @@ import PublishEvents from "../events/publish/Events";
  * Json doc generator
  */
 export class ProjectTypeGenerator {
-  files: string[];
+  addedFiles: string[];
   modifiedFiles: string[];
 
-  constructor(files: string[], modifiedFiles: string[]) {
-    this.files = files;
+  constructor(addedFiles: string[], modifiedFiles: string[]) {
+    this.addedFiles = addedFiles;
     this.modifiedFiles = modifiedFiles;
   }
 
@@ -21,7 +21,7 @@ export class ProjectTypeGenerator {
         case "typescript":
           return await require("@undoc/ts-gen").generate(
             undocEvents,
-            this.files,
+            this.addedFiles,
             this.modifiedFiles
           );
         default:
