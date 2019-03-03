@@ -1,19 +1,35 @@
+import * as moment from "moment";
+
 import { CliLastCommit_cliLastCommit } from "../../types/schema";
 import { IsoGit } from "../../lib/IsoGit";
 import { ExistingProjectFiles } from "./ExistingProjectFiles";
 import { ProjectTypeGenerator } from "../../project-type/ProjectTypeGenerator";
 import { ExistingProjectUpdates } from "./ExistingProjectUpdates";
 import { ProjectTypeParser } from "../../project-type/ProjectTypeParser";
+import { PublishProjectUpdatedFiles } from "./PublishProjectUpdatedFiles";
+
+import PublishEvents from "../../events/publish/Events";
 
 /**
  * Existing project publish
  */
 export class ExistingProjectPublish {
-  commit: CliLastCommit_cliLastCommit;
+  publishStatus: any;
 
-  constructor(commit: CliLastCommit_cliLastCommit) {
-    this.commit = commit;
+  constructor(publishStatus: any) {
+    this.publishStatus = publishStatus;
   }
+
+  private statusEvent = async (commit: any) => {
+    const branch = await new IsoGit().git().currentBranch({
+      dir: IsoGit.dir,
+      fullname: false
+    });
+
+    const sha = commit.fetchHead.substring(0, 6);
+    const context = `Publishing update [${branch} ${sha}]`;
+    PublishEvents.emitter("existing_publish", context);
+  };
 
   run = async (): Promise<void> => {
     try {
@@ -27,16 +43,34 @@ export class ExistingProjectPublish {
         throw "Unable to determine current commit";
       }
 
-      if (lastCommit.fetchHead === this.commit.sha) {
-        console.log("Undoc up-to-date. Nothing to do.");
+      const commit = this.publishStatus.commit;
+
+      if (lastCommit.fetchHead === commit.sha) {
+        const context = "Project up-to-date. Nothing to do.";
+        PublishEvents.emitter("noaction_up_to_date", context);
         return;
       }
 
-      const projectFiles = new ExistingProjectFiles(this.commit.sha);
+      await this.statusEvent(lastCommit);
+
+      const projectFiles = new ExistingProjectFiles(commit.sha);
+
+      const lastCommitPub = commit.sha.substring(0, 6);
+      PublishEvents.emitter(
+        "existing_last_commit",
+        `Last published: [${lastCommitPub}] ${moment(
+          commit.createdAt
+        ).fromNow()}`
+      );
 
       const { all, modified } = await projectFiles.get();
 
-      await new ProjectTypeGenerator(all, modified).run();
+      PublishEvents.emitter(
+        "existing_publish_modified",
+        `${modified.length} tracked files modified`
+      );
+
+      PublishEvents.emitter("isogit_init", "Reviewing Git for file changes");
 
       const modifiedFilesByCommits = await projectFiles.getModifiedWithCommits(
         modified
@@ -46,9 +80,13 @@ export class ExistingProjectPublish {
         modifiedFilesByCommits
       ).files();
 
+      await new ProjectTypeGenerator(all, modified).run();
+
       const results = await new ProjectTypeParser(fileUpdates).run();
 
-      // Next: make updates on modified files
+      console.log(results);
+
+      // await new PublishProjectUpdatedFiles(results.updated).run();
     } catch (err) {
       throw err;
     }

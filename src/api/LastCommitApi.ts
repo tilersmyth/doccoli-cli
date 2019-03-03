@@ -13,7 +13,7 @@ export class LastCommitApi {
     this.branch = branch;
   }
 
-  async results(): Promise<CliLastCommit_cliLastCommit> {
+  async results(): Promise<any> {
     try {
       const token = await keytar.getToken();
       const config = await UndocFile.config();
@@ -22,9 +22,17 @@ export class LastCommitApi {
         query: gql`
           query CliLastCommit($branch: String!) {
             cliLastCommit(branch: $branch) {
+              project {
+                name
+              }
+              user {
+                firstName
+                lastName
+              }
               commit {
                 sha
                 branch
+                createdAt
               }
               error {
                 path
@@ -43,14 +51,14 @@ export class LastCommitApi {
       };
 
       const {
-        cliLastCommit: { error, commit }
+        cliLastCommit: { error, commit, project, user }
       } = await new Apollo(operation).fetch();
 
       if (error) {
         throw error.message;
       }
 
-      return commit;
+      return { commit, project, user };
     } catch (err) {
       throw err;
     }

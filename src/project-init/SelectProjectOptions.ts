@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import * as inquirer from "inquirer";
 
 import { FindUserProjectsApi } from "../api/FindUserProjectsApi";
@@ -32,14 +31,19 @@ export class SelectProjectOptions {
 
       const projectChoices: any = [];
       for (const project of projects) {
-        projectChoices.push({
-          name: project.name,
-          value: { key: project.key, name: project.name }
-        });
-        projectChoices.push(new inquirer.Separator());
+        projectChoices.push(
+          {
+            name: project.name,
+            value: { key: project.key, name: project.name }
+          },
+          new inquirer.Separator()
+        );
       }
 
-      projectChoices.push({ name: "Create new project", value: null });
+      projectChoices.push(
+        { name: "Create new project", value: null },
+        new inquirer.Separator()
+      );
 
       this.inputs[0].choices = projectChoices;
 

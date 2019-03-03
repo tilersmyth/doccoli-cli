@@ -4,6 +4,11 @@ export class UndocFile {
   static async config(): Promise<any> {
     try {
       const file = await FileUtils.readFile(".undoc/config.json");
+
+      if (!file) {
+        throw "Unable to locate Undoc config file. Run command: 'undoc init'.";
+      }
+
       const parsedFile = JSON.parse(file);
 
       if (!parsedFile.key) {

@@ -8,7 +8,7 @@ import { CliLastCommit_cliLastCommit } from "../types/schema";
  * Get the commit sha that was most recently published
  */
 export class GetLastPublishedSha {
-  run = async (): Promise<CliLastCommit_cliLastCommit | null> => {
+  run = async (): Promise<any> => {
     try {
       const iso = new IsoGit();
       const branch = await iso.git().currentBranch({
@@ -20,7 +20,9 @@ export class GetLastPublishedSha {
         throw "Unable to determine current branch";
       }
 
-      return await new LastCommitApi(branch).results();
+      const results = await new LastCommitApi(branch).results();
+
+      return results;
     } catch (err) {
       throw err;
     }

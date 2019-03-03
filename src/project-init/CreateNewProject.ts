@@ -1,9 +1,9 @@
-import chalk from "chalk";
 import * as inquirer from "inquirer";
 
 import { CreateProjectApi } from "../api/CreateProjectApi";
-
 import { CreateProjectMutation_cliCreateProject } from "../types/schema";
+
+import InitEvents from "../events/init/Events";
 
 /**
  * Create new project
@@ -23,7 +23,10 @@ export class CreateNewProject {
 
       const project = await new CreateProjectApi().results(projectName);
 
-      console.log(chalk.green(`\n${project.name} successfully created\n`));
+      InitEvents.emitter(
+        "create_new_project",
+        `${project.name} successfully created`
+      );
 
       return project;
     } catch (err) {

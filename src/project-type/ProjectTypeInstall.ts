@@ -1,7 +1,7 @@
-import chalk from "chalk";
-
 import { exec, spawn } from "child_process";
 import { FileUtils } from "../utils/FileUtils";
+
+import InitEvents from "../events/init/Events";
 
 /**
  * Install required dependencies depending on selected project type (TS only for now)
@@ -18,14 +18,15 @@ export class ProjectTypeInstall {
     args: string[]
   ) {
     return new Promise<void>((resolve, reject) => {
-      console.log(action, dependency, ...args);
       const stream = spawn(command, [action, dependency, ...args], {
         stdio: "pipe"
       });
 
       const output = (data: any) => {
         if (`${data}`.match(/^\[[0-9]\/[0-9]+\]/)) {
-          process.stdout.write(chalk.white(`${data}`));
+          // Remove line breaks
+          const dataCleaned = `${data}`.replace(/(\r\n|\n|\r)/gm, "");
+          InitEvents.emitter("dependency_install_action", dataCleaned);
         }
       };
 
@@ -33,8 +34,9 @@ export class ProjectTypeInstall {
       stream.stderr.on("data", output);
       stream.on("error", () => reject());
       stream.on("close", () => {
-        process.stdout.write(
-          chalk.white(`${dependency} successfully installed\n\n`)
+        InitEvents.emitter(
+          "dependency_install_dep_done",
+          `${dependency} successfully installed`
         );
         resolve();
       });
@@ -67,7 +69,7 @@ export class ProjectTypeInstall {
       localCheck = localCheck.replace("undoc-cli", "");
     }
 
-    const regex = new RegExp(`${dependency}@(.*)\n`);
+    const regex = new RegExp(`${dependency}@(.*)`);
     const localMatches = localCheck.match(regex);
     return localMatches ? true : false;
   }
@@ -77,7 +79,7 @@ export class ProjectTypeInstall {
       "npm list -g --depth=0"
     );
 
-    const regex = new RegExp(`${dependency}@(.*)\n`);
+    const regex = new RegExp(`${dependency}@(.*)`);
     const localMatches = localCheck.match(regex);
     return localMatches ? true : false;
   }
@@ -93,7 +95,6 @@ export class ProjectTypeInstall {
       const global = await this.packageExistsGlobal("undoc-cli");
       if (global) {
         const path = await this.executeCommand("npm root -g");
-        console.log(path);
         return `${path.trim()}/undoc-cli`;
       }
 
@@ -104,7 +105,10 @@ export class ProjectTypeInstall {
   }
 
   static async installPackage(dependency: string, path: string): Promise<void> {
-    console.log(chalk.white(`Adding ${dependency} dependency to Undoc`));
+    InitEvents.emitter(
+      "dependency_install_dep_start",
+      `Adding ${dependency} dependency to Undoc`
+    );
     const yarn = ProjectTypeInstall.packageMgr();
     const command = yarn ? "yarn" : "npm";
     const action = yarn ? "add" : "install";

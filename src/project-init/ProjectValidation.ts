@@ -1,20 +1,17 @@
-import chalk from "chalk";
-
 import { FileUtils } from "../utils/FileUtils";
+
+import InitEvents from "../events/init/Events";
 
 /**
  * Make sure Undoc is setup in valid environment
  */
 export class ProjectValidation {
   async run(): Promise<void> {
-    const rootDir = process.cwd();
-
     try {
-      const undocConfig = FileUtils.fileExists(".undoc/config.json");
-
-      if (undocConfig) {
-        throw "Undoc is already setup in this directory";
-      }
+      InitEvents.emitter(
+        "init_project_validation",
+        "Validating project workspace"
+      );
 
       const gitDir = FileUtils.fileExists(".git");
 

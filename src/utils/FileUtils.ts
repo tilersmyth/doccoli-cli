@@ -46,9 +46,9 @@ export class FileUtils {
    */
   static async readFile(filePath: string): Promise<string> {
     const root = FileUtils.root();
-    return new Promise<string>((ok, fail) => {
+    return new Promise<string>(ok => {
       fs.readFile(`${root}/${filePath}`, (err, data) =>
-        err ? fail(err) : ok(data.toString())
+        err ? ok() : ok(data.toString())
       );
     });
   }

@@ -14,7 +14,7 @@ export class ColDiff {
     try {
       const diffChars = jsDiff.diffChars(this.oldContent, this.newContent);
 
-      // Chunks of characters that are NO AFFECTED by update
+      // Chunks of characters that are NOT AFFECTED by update
       const colChunks: ColChunk[] = [];
       let charInc: number = 1;
       let addedContent: string = "";

@@ -5,6 +5,8 @@ import { UpdateFilesApi } from "../../api/UpdateFilesApi";
 import { IsoGit } from "../../lib/IsoGit";
 import { ModifiedFile } from "./types";
 
+import PublishEvents from "../../events/publish/Events";
+
 /**
  * Get existing project files - including those that are updated
  */
@@ -17,6 +19,36 @@ export class ExistingProjectFiles {
     this.sha = sha;
     this.isoGit = new IsoGit();
   }
+
+  get = async (): Promise<{
+    all: string[];
+    modified: string[];
+  }> => {
+    const files = await new GetUpdatedFiles(this.sha).walk();
+
+    // If no deletions and no modified files
+    if (files.deleted.length === 0 && files.modified.length === 0) {
+      return { all: files.added, modified: [] };
+    }
+
+    // Files modified locally that exist remotely (tracked)
+    const modifiedTrackedFiles = await new UpdateFilesApi(
+      files.modified,
+      files.deleted
+    ).results();
+
+    // Merge added and modified for JSON generation (while keeping another list with modified tracked)
+    const allFiles = [...files.added, ...files.modified];
+
+    // no tracked files have been updated, return added
+    if (modifiedTrackedFiles.length === 0) {
+      return { all: allFiles, modified: [] };
+    }
+
+    const modified = modifiedTrackedFiles.map((file: any) => file.path);
+
+    return { all: allFiles, modified };
+  };
 
   private findCommitsThatMatter(commits: git.CommitDescription[]): string[] {
     try {
@@ -65,36 +97,6 @@ export class ExistingProjectFiles {
     return fileObj;
   };
 
-  get = async (): Promise<{
-    all: string[];
-    modified: string[];
-  }> => {
-    const files = await new GetUpdatedFiles(this.sha).walk();
-
-    // If no deletions and no modified files
-    if (files.deleted.length === 0 && files.modified.length === 0) {
-      return { all: files.added, modified: [] };
-    }
-
-    // Files modified locally that exist remotely (tracked)
-    const modifiedTrackedFiles = await new UpdateFilesApi(
-      files.modified,
-      files.deleted
-    ).results();
-
-    // Merge added and modified for JSON generation (while keeping another list with modified tracked)
-    const allFiles = [...files.added, ...files.modified];
-
-    // no tracked files have been updated, return added
-    if (modifiedTrackedFiles.length === 0) {
-      return { all: allFiles, modified: [] };
-    }
-
-    const modified = modifiedTrackedFiles.map((file: any) => file.path);
-
-    return { all: allFiles, modified };
-  };
-
   getModifiedWithCommits = async (modifiedFiles: string[]) => {
     const git = this.isoGit.git();
     const commits = await git.log({
@@ -102,7 +104,11 @@ export class ExistingProjectFiles {
     });
 
     this.commitsThatMatter = this.findCommitsThatMatter(commits);
-    console.log(`${this.commitsThatMatter.length} commits since last publish`);
+
+    const commitCount = this.commitsThatMatter.length;
+    const firstCommit = this.commitsThatMatter[0].substring(0, 6);
+    const detailContext = `${commitCount} commits since [${firstCommit}]`;
+    PublishEvents.emitter("isogit_detail", detailContext);
 
     return Promise.all<ModifiedFile>(modifiedFiles.map(this.mapFiles));
   };
