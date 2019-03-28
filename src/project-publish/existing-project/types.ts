@@ -4,15 +4,23 @@ export interface ModifiedFile {
   newOid: string;
 }
 
-export interface ColChunk {
-  start: number;
-  end: number;
+export interface CharCol {
+  colStart: number;
+  colEnd: number;
 }
 
-export interface LineDiffDetail {
-  type: string;
+interface ModifiedLine {
   lineNo: number;
-  cols: ColChunk[];
-  addedContent: string;
-  removedContent: string;
+  exclude: CharCol[];
+}
+
+interface LineUpdateTypes {
+  added: number[];
+  removed: number[];
+  modified: ModifiedLine[];
+}
+
+export interface FileLineUpdates {
+  file: string;
+  lines: LineUpdateTypes;
 }

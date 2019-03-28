@@ -44,6 +44,13 @@ export class ExistingProjectFiles {
 
     const modifiedFiles = modifiedTrackedFiles.map((file: any) => file.path);
 
+    PublishEvents.emitter(
+      "existing_publish_modified",
+      `Files: ${files.deleted.length} removed, ${files.added.length} added, ${
+        modifiedFiles.length
+      } modified`
+    );
+
     return { addedFiles: files.added, modifiedFiles };
   };
 
