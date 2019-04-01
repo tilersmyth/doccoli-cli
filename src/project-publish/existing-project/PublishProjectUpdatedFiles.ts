@@ -5,11 +5,11 @@ import { IsoGit } from "../../lib/IsoGit";
  * Publish project files to server
  */
 export class PublishProjectUpdatedFiles {
-  files: any = [];
+  updateQueries: any = [];
   iso: IsoGit;
 
-  constructor(files: any) {
-    this.files = files;
+  constructor(updateQueries: any) {
+    this.updateQueries = updateQueries;
     this.iso = new IsoGit();
   }
 
@@ -18,17 +18,25 @@ export class PublishProjectUpdatedFiles {
       const commit = await this.iso.lastCommitSha();
       const branch = await this.iso.branch();
 
-      for (const files of this.files) {
-        console.log(files.file);
-        for (const update of files.updates) {
-          console.log(update);
-        }
-        // await new PublishApi(
-        //   this.files[i],
-        //   { sha: commit, branch },
-        //   { size: this.files.length, index: i + 1 }
-        // ).results();
-      }
+      // TESTING
+
+      const test = this.updateQueries.updated[0];
+      const file = test.file;
+
+      const update = test.modified[0];
+
+      console.log("FILE: ", file);
+      console.log("UPDATE: ", update);
+
+      // END TESTING
+
+      // for (const update of this.updateQueries.updated) {
+      //   console.log(`+++ ${update.file} +++`);
+
+      //   for (const line of update.modified) {
+      //     console.log(line);
+      //   }
+      // }
     } catch (err) {
       throw err;
     }

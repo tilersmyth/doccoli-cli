@@ -75,14 +75,12 @@ export class ExistingProjectPublish {
 
       await new ProjectTypeGenerator(addedFiles, modifiedFiles).run();
 
-      const results = await new ProjectTypeParser(
+      const updateQueries = await new ProjectTypeParser(
         addedFiles,
         modifiedFileLineDetail
       ).run();
 
-      console.log(results);
-
-      // await new PublishProjectUpdatedFiles(results.updated).run();
+      await new PublishProjectUpdatedFiles(updateQueries).run();
     } catch (err) {
       throw err;
     }

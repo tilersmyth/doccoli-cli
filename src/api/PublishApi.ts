@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 import { Apollo } from "./Apollo";
 import keytar from "../utils/keytar";
 import { UndocFile } from "../utils/UndocFile";
+import { NpmFile } from "../utils/NpmFile";
 
 //import { CreateProjectMutation_cliCreateProject } from "../types/schema";
 
@@ -20,14 +21,22 @@ export class PublishApi {
   async results(): Promise<any> {
     const token = await keytar.getToken();
     const config = await UndocFile.config();
+    const version = await NpmFile.version();
+
     const operation = {
       query: gql`
         mutation PublishMutation(
           $file: ModuleFileInput!
+          $version: String!
           $commit: ModuleCommit!
           $progress: PublishProgress!
         ) {
-          cliPublishCreate(file: $file, commit: $commit, progress: $progress) {
+          cliPublishCreate(
+            file: $file
+            version: $version
+            commit: $commit
+            progress: $progress
+          ) {
             created
             error {
               path
@@ -38,6 +47,7 @@ export class PublishApi {
       `,
       variables: {
         file: this.file,
+        version,
         commit: this.commit,
         progress: this.progress
       },
