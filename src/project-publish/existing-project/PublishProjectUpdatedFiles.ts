@@ -26,7 +26,7 @@ export class PublishProjectUpdatedFiles {
       const update = test.modified[0];
 
       console.log("FILE: ", file);
-      console.log("UPDATE: ", update);
+      console.log("UPDATE: ", update.query);
 
       // END TESTING
 

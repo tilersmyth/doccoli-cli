@@ -33,6 +33,7 @@ export class ExistingProjectFiles {
 
     // Files modified locally that exist remotely (tracked)
     const modifiedTrackedFiles = await new UpdateFilesApi(
+      this.sha,
       files.modified,
       files.deleted
     ).results();

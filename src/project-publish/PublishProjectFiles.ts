@@ -22,7 +22,7 @@ export class PublishProjectFiles {
         await new PublishApi(
           this.files[i],
           { sha: commit, branch },
-          { size: this.files.length, index: i + 1 }
+          { nodesTotal: this.files.length, nodesPublished: i + 1 }
         ).results();
       }
     } catch (err) {
