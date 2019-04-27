@@ -20,6 +20,7 @@ export class PublishEventGroup {
       generator: GeneratorLogger,
       parser: ParserLogger,
       push: GenericLogger,
+      cleanup: GenericLogger,
       complete: GenericLogger,
       error: ErrorsLogger,
       noaction: NoActionLogger

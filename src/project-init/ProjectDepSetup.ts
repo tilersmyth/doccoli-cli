@@ -7,7 +7,7 @@ export class ProjectDepSetup {
   async run() {
     try {
       const configFile = await UndocFile.config();
-      switch (configFile.target) {
+      switch (configFile.language) {
         case "typescript":
           return await require("@undoc/ts-gen").setup();
         default:

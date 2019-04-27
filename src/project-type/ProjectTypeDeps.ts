@@ -4,10 +4,10 @@ import { UndocFile } from "../utils/UndocFile";
  * Utils for determining new project dependency requirements
  */
 export class ProjectTypeDeps {
-  private async target() {
+  private async language() {
     try {
       const file = await UndocFile.config();
-      return file.target;
+      return file.language;
     } catch (err) {
       throw err;
     }
@@ -16,7 +16,7 @@ export class ProjectTypeDeps {
   // Setup for addtional options
   async generator() {
     try {
-      switch (await this.target()) {
+      switch (await this.language()) {
         case "typescript":
           return "@undoc/ts-gen";
         default:
@@ -29,7 +29,7 @@ export class ProjectTypeDeps {
 
   async parser() {
     try {
-      switch (await this.target()) {
+      switch (await this.language()) {
         case "typescript":
           return "@undoc/ts-parse";
         default:

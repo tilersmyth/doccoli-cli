@@ -3,9 +3,12 @@ import * as git from "isomorphic-git";
 import { GetUpdatedFiles } from "./GetUpdatedFiles";
 import { UpdateFilesApi } from "../../api/UpdateFilesApi";
 import { IsoGit } from "../../lib/IsoGit";
-import { ModifiedFile } from "./types";
-
 import PublishEvents from "../../events/publish/Events";
+
+interface ModifiedFile {
+  path: string;
+  oldOid: string;
+}
 
 /**
  * Get existing project files - including those that are updated
@@ -73,7 +76,7 @@ export class ExistingProjectFiles {
   }
 
   private mapFiles = async (file: string): Promise<ModifiedFile> => {
-    const fileObj: ModifiedFile = { path: file, oldOid: "", newOid: "" };
+    const fileObj: ModifiedFile = { path: file, oldOid: "" };
     const git = this.isoGit.git();
     const commits = this.commitsThatMatter;
     let lastFileSha = null;
@@ -91,9 +94,6 @@ export class ExistingProjectFiles {
           if (!fileObj.oldOid) {
             fileObj.oldOid = lastFileSha;
           }
-
-          // Keep seting until most recent oid is set
-          fileObj.newOid = fileObject.oid;
         }
         lastFileSha = fileObject.oid;
       }

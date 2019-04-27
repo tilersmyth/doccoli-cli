@@ -4,24 +4,16 @@ import { Apollo } from "../Apollo";
 import keytar from "../../utils/keytar";
 import { UndocFile } from "../../utils/UndocFile";
 
-export class CommentApi {
+export class PublishUpdateApi {
   commit: any;
-  path: string;
-  query: any;
-  comment: any;
+  version: string;
+  file: any;
   progress: any;
 
-  constructor(
-    commit: any,
-    path: string,
-    query: any,
-    comment: any,
-    progress: any
-  ) {
+  constructor(commit: any, version: any, file: any, progress: any) {
     this.commit = commit;
-    this.path = path;
-    this.query = query;
-    this.comment = comment;
+    this.version = version;
+    this.file = file;
     this.progress = progress;
   }
 
@@ -31,27 +23,24 @@ export class CommentApi {
 
     const operation = {
       query: gql`
-        mutation CliPublishUpdateComment(
+        mutation CliPublishUpdate(
           $commit: ModuleCommit!
-          $path: String!
-          $query: [NodeUpdateQuery!]
-          $comment: ModuleChildCommentInput!
+          $version: String!
+          $file: FileUpdate!
           $progress: PublishProgress!
         ) {
-          cliPublishUpdateComment(
+          cliPublishUpdate(
             commit: $commit
-            path: $path
-            query: $query
-            comment: $comment
+            version: $version
+            file: $file
             progress: $progress
           )
         }
       `,
       variables: {
         commit: this.commit,
-        path: this.path,
-        query: this.query,
-        comment: this.comment,
+        version: this.version,
+        file: this.file,
         progress: this.progress
       },
       context: {
@@ -62,9 +51,9 @@ export class CommentApi {
       }
     };
     try {
-      const { cliPublishCreate } = await new Apollo(operation).fetch();
+      const { cliPublishUpdate } = await new Apollo(operation).fetch();
 
-      return cliPublishCreate;
+      return cliPublishUpdate;
     } catch (err) {
       console.log(err.result);
       throw err;

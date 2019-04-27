@@ -1,6 +1,9 @@
 import { PublishApi } from "../../api/PublishApi";
 import { IsoGit } from "../../lib/IsoGit";
 
+import { CommentApi } from "../../api/publish-update/CommentApi";
+import { PublishUpdateApi } from "../../api/publish-update/PublishUpdateApi";
+
 /**
  * Publish project files to server
  */
@@ -15,28 +18,19 @@ export class PublishProjectUpdatedFiles {
 
   run = async (): Promise<void> => {
     try {
-      const commit = await this.iso.lastCommitSha();
+      const sha = await this.iso.lastCommitSha();
       const branch = await this.iso.branch();
 
-      // TESTING
+      const publish = this.updateQueries;
 
-      const test = this.updateQueries.updated[0];
-      const file = test.file;
+      for (let i = 0; i < publish.length; i++) {
+        await new PublishUpdateApi({ sha, branch }, "", publish[i], {
+          nodesPublished: i + 1,
+          nodesTotal: publish.length
+        }).results();
+      }
 
-      const update = test.modified[0];
-
-      console.log("FILE: ", file);
-      console.log("UPDATE: ", update.query);
-
-      // END TESTING
-
-      // for (const update of this.updateQueries.updated) {
-      //   console.log(`+++ ${update.file} +++`);
-
-      //   for (const line of update.modified) {
-      //     console.log(line);
-      //   }
-      // }
+      return;
     } catch (err) {
       throw err;
     }

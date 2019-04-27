@@ -31,7 +31,6 @@
     "@types/yargs": "^12.0.1",
     "@types/yup": "^0.26.2",
     "apollo": "^1.6.0",
-    "rimraf": "^2.6.2",
     "ts-node": "^7.0.1",
     "typescript": "^3.1.6"
   },
@@ -51,6 +50,7 @@
     "moment": "^2.24.0",
     "ora": "^3.1.0",
     "remove": "^0.1.5",
+    "rimraf": "^2.6.3",
     "string-similarity": "^3.0.0",
     "yargs": "^12.0.2",
     "yup": "^0.26.6"

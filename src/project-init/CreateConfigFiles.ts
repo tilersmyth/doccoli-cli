@@ -17,7 +17,7 @@ export class CreateConfigFiles {
         ".undoc/config.json",
         `{"key":"${this.project.key}", "name":"${
           this.project.name
-        }", "target": "typescript"}`
+        }", "language": "typescript"}`
       );
 
       return;

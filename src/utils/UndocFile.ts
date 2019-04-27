@@ -19,8 +19,8 @@ export class UndocFile {
         throw "Name field is missing from config file";
       }
 
-      if (!parsedFile.target) {
-        throw "Target field is missing from config file";
+      if (!parsedFile.language) {
+        throw "Language field is missing from config file";
       }
 
       return parsedFile;

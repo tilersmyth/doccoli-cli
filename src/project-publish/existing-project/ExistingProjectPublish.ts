@@ -1,12 +1,12 @@
 import * as moment from "moment";
 
-import { CliLastCommit_cliLastCommit } from "../../types/schema";
 import { IsoGit } from "../../lib/IsoGit";
 import { ExistingProjectFiles } from "./ExistingProjectFiles";
 import { ProjectTypeGenerator } from "../../project-type/ProjectTypeGenerator";
-import { ExistingProjectUpdates } from "./ExistingProjectUpdates";
 import { ProjectTypeParser } from "../../project-type/ProjectTypeParser";
 import { PublishProjectUpdatedFiles } from "./PublishProjectUpdatedFiles";
+
+import { GenerateOldFiles } from "./GenerateOldFiles";
 
 import PublishEvents from "../../events/publish/Events";
 
@@ -65,22 +65,23 @@ export class ExistingProjectPublish {
         "Gathering modified file line changes"
       );
 
-      const modifiedFilesByCommits = await projectFiles.getModifiedWithCommits(
+      const modifiedFilesByOid = await projectFiles.getModifiedWithCommits(
         modifiedFiles
       );
 
-      const modifiedFileLineDetail = await new ExistingProjectUpdates(
-        modifiedFilesByCommits
-      ).files();
+      const oldFiles = await new GenerateOldFiles(modifiedFilesByOid).create();
 
-      await new ProjectTypeGenerator(addedFiles, modifiedFiles).run();
+      await new ProjectTypeGenerator(oldFiles, true).run();
+
+      const allFiles = [...addedFiles, ...modifiedFiles];
+      await new ProjectTypeGenerator(allFiles, false).run();
 
       const updateQueries = await new ProjectTypeParser(
         addedFiles,
-        modifiedFileLineDetail
+        modifiedFilesByOid
       ).run();
 
-      await new PublishProjectUpdatedFiles(updateQueries).run();
+      await new PublishProjectUpdatedFiles(updateQueries.modified).run();
     } catch (err) {
       throw err;
     }

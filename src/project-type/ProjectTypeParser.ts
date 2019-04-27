@@ -1,14 +1,13 @@
 import { UndocFile } from "../utils/UndocFile";
 import PublishEvents from "../events/publish/Events";
-
-import { FileLineUpdates } from "../project-publish/existing-project/types";
+import { IsoGit } from "../lib/IsoGit";
 
 /**
  * Json doc parser
  */
 export class ProjectTypeParser {
   addedFiles: string[];
-  modifiedFiles: FileLineUpdates[];
+  modifiedFiles: string[];
 
   constructor(addedFiles: string[], modifiedFileUpdateDetail?: any) {
     this.addedFiles = addedFiles;
@@ -16,9 +15,12 @@ export class ProjectTypeParser {
   }
 
   private async selectParser(events: any) {
+    const iso = new IsoGit();
+    const sha = await iso.lastCommitSha();
+
     try {
       const configFile = await UndocFile.config();
-      switch (configFile.target) {
+      switch (configFile.language) {
         case "typescript":
           if (this.modifiedFiles) {
             return await require("@undoc/ts-parse").parseUpdate(
