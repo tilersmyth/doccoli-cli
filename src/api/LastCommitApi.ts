@@ -6,10 +6,11 @@ import { CliLastCommit_cliLastCommit } from "../types/schema";
 import keytar from "../utils/keytar";
 import { UndocFile } from "../utils/UndocFile";
 
-export class LastCommitApi {
+export class LastCommitApi extends Apollo {
   branch: string;
 
   constructor(branch: string) {
+    super();
     this.branch = branch;
   }
 
@@ -52,7 +53,7 @@ export class LastCommitApi {
 
       const {
         cliLastCommit: { error, commit, project, user }
-      } = await new Apollo(operation).fetch();
+      } = await this.fetch(operation);
 
       if (error) {
         throw error.message;

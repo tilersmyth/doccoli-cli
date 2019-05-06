@@ -1,7 +1,6 @@
 import { PublishApi } from "../../api/PublishApi";
 import { IsoGit } from "../../lib/IsoGit";
 
-import { CommentApi } from "../../api/publish-update/CommentApi";
 import { PublishUpdateApi } from "../../api/publish-update/PublishUpdateApi";
 
 /**

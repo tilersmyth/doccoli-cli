@@ -5,7 +5,7 @@ import { Apollo } from "./Apollo";
 import { MeQuery_cliMe } from "../types/schema";
 import keytar from "../utils/keytar";
 
-export class MeApi {
+export class MeApi extends Apollo {
   async results(): Promise<MeQuery_cliMe> {
     try {
       const token = await keytar.getToken();
@@ -35,7 +35,7 @@ export class MeApi {
 
       const {
         cliMe: { user, error }
-      } = await new Apollo(operation).fetch();
+      } = await this.fetch(operation);
 
       if (error) {
         throw error.message;

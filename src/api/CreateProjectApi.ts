@@ -5,7 +5,7 @@ import { Apollo } from "./Apollo";
 import { CreateProjectMutation_cliCreateProject } from "../types/schema";
 import keytar from "../utils/keytar";
 
-export class CreateProjectApi {
+export class CreateProjectApi extends Apollo {
   async results(name: string): Promise<CreateProjectMutation_cliCreateProject> {
     try {
       const token = await keytar.getToken();
@@ -34,7 +34,7 @@ export class CreateProjectApi {
 
       const {
         cliCreateProject: { project, error }
-      } = await new Apollo(operation).fetch();
+      } = await this.fetch(operation);
 
       if (error) {
         throw error.message;

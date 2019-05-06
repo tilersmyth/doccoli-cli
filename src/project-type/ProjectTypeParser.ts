@@ -1,38 +1,33 @@
 import { UndocFile } from "../utils/UndocFile";
 import PublishEvents from "../events/publish/Events";
-import { IsoGit } from "../lib/IsoGit";
+
+interface ModifiedFile {
+  path: string;
+  oldOid: string;
+}
+
+interface ParserFiles {
+  tracked: string[];
+  added: string[];
+  modified: ModifiedFile[];
+}
 
 /**
  * Json doc parser
  */
 export class ProjectTypeParser {
-  addedFiles: string[];
-  modifiedFiles: string[];
+  files: ParserFiles;
 
-  constructor(addedFiles: string[], modifiedFileUpdateDetail?: any) {
-    this.addedFiles = addedFiles;
-    this.modifiedFiles = modifiedFileUpdateDetail;
+  constructor(files: ParserFiles) {
+    this.files = files;
   }
 
   private async selectParser(events: any) {
-    const iso = new IsoGit();
-    const sha = await iso.lastCommitSha();
-
     try {
       const configFile = await UndocFile.config();
       switch (configFile.language) {
         case "typescript":
-          if (this.modifiedFiles) {
-            return await require("@undoc/ts-parse").parseUpdate(
-              events,
-              this.addedFiles,
-              this.modifiedFiles
-            );
-          }
-          return await require("@undoc/ts-parse").parseNew(
-            events,
-            this.addedFiles
-          );
+          return await require("@undoc/ts-parse").parse(events, this.files);
         default:
           throw "invalid target type";
       }

@@ -4,12 +4,13 @@ import { Apollo } from "./Apollo";
 import keytar from "../utils/keytar";
 import { UndocFile } from "../utils/UndocFile";
 
-export class UpdateFilesApi {
+export class UpdateFilesApi extends Apollo {
   commitSha: string;
   modified: string[];
   deleted: string[];
 
   constructor(commitSha: string, modified: string[], deleted: string[]) {
+    super();
     this.commitSha = commitSha;
     this.modified = modified;
     this.deleted = deleted;
@@ -22,7 +23,7 @@ export class UpdateFilesApi {
 
       const operation = {
         query: gql`
-          mutation updateAndFindAll(
+          mutation UpdateAndFindAll(
             $commitSha: String!
             $modified: [String!]
             $deleted: [String!]
@@ -57,7 +58,7 @@ export class UpdateFilesApi {
 
       const {
         updateAndFindAll: { files, error }
-      } = await new Apollo(operation).fetch();
+      } = await this.fetch(operation);
 
       if (error) {
         throw error;

@@ -7,12 +7,13 @@ import { NpmFile } from "../utils/NpmFile";
 
 //import { CreateProjectMutation_cliCreateProject } from "../types/schema";
 
-export class PublishApi {
+export class PublishApi extends Apollo {
   file: any;
   commit: any;
   progress: any;
 
   constructor(file: any, commit: any, progress: any) {
+    super();
     this.file = file;
     this.commit = commit;
     this.progress = progress;
@@ -61,7 +62,7 @@ export class PublishApi {
     try {
       const {
         cliPublishCreate: { created, error }
-      } = await new Apollo(operation).fetch();
+      } = await this.fetch(operation);
 
       if (error) {
         throw error;

@@ -5,7 +5,7 @@ import { Apollo } from "./Apollo";
 import { UserProjectsQuery_cliUserProjects } from "../types/schema";
 import keytar from "../utils/keytar";
 
-export class FindUserProjectsApi {
+export class FindUserProjectsApi extends Apollo {
   async results(): Promise<UserProjectsQuery_cliUserProjects[]> {
     try {
       const token = await keytar.getToken();
@@ -34,7 +34,7 @@ export class FindUserProjectsApi {
 
       const {
         cliUserProjects: { projects, error }
-      } = await new Apollo(operation).fetch();
+      } = await this.fetch(operation);
 
       if (error) {
         throw error;

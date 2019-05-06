@@ -1,11 +1,11 @@
 import * as moment from "moment";
 
 import { IsoGit } from "../../lib/IsoGit";
-import { ExistingProjectFiles } from "./ExistingProjectFiles";
 import { ProjectTypeGenerator } from "../../project-type/ProjectTypeGenerator";
 import { ProjectTypeParser } from "../../project-type/ProjectTypeParser";
 import { PublishProjectUpdatedFiles } from "./PublishProjectUpdatedFiles";
-
+import { ProjectFiles } from "./ProjectFiles";
+import { ModifiedFileOids } from "./ModifiedFileOids";
 import { GenerateOldFiles } from "./GenerateOldFiles";
 
 import PublishEvents from "../../events/publish/Events";
@@ -47,8 +47,6 @@ export class ExistingProjectPublish {
 
       await this.statusEvent(lastCommitSha);
 
-      const projectFiles = new ExistingProjectFiles(commit.sha);
-
       const lastCommitPub = ExistingProjectPublish.shortSha(commit.sha);
 
       PublishEvents.emitter(
@@ -58,28 +56,27 @@ export class ExistingProjectPublish {
         ).fromNow()}`
       );
 
-      const { addedFiles, modifiedFiles } = await projectFiles.get();
-
       PublishEvents.emitter(
         "isogit_init",
         "Gathering modified file line changes"
       );
 
-      const modifiedFilesByOid = await projectFiles.getModifiedWithCommits(
-        modifiedFiles
-      );
+      const projectFiles = new ProjectFiles(commit.sha);
 
-      const oldFiles = await new GenerateOldFiles(modifiedFilesByOid).create();
+      const { tracked, modified, added } = await projectFiles.files();
 
+      const fileOids = new ModifiedFileOids(commit.sha);
+
+      const modifiedByOid = await Promise.all(modified.map(fileOids.bind));
+
+      const oldFiles = await new GenerateOldFiles(modifiedByOid).create();
       await new ProjectTypeGenerator(oldFiles, true).run();
 
-      const allFiles = [...addedFiles, ...modifiedFiles];
-      await new ProjectTypeGenerator(allFiles, false).run();
+      const newFiles = [...added, ...modified];
+      await new ProjectTypeGenerator(newFiles, false).run();
 
-      const updateQueries = await new ProjectTypeParser(
-        addedFiles,
-        modifiedFilesByOid
-      ).run();
+      const updateFiles = { tracked, added, modified: modifiedByOid };
+      const updateQueries = await new ProjectTypeParser(updateFiles).run();
 
       await new PublishProjectUpdatedFiles(updateQueries.modified).run();
     } catch (err) {

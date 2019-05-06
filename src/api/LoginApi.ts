@@ -6,10 +6,11 @@ import {
   LoginMutation_cliLogin
 } from "../types/schema";
 
-export class LoginApi {
+export class LoginApi extends Apollo {
   values: LoginMutationVariables;
 
   constructor(values: LoginMutationVariables) {
+    super();
     this.values = values;
   }
 
@@ -27,7 +28,7 @@ export class LoginApi {
     };
 
     try {
-      const { cliLogin } = await new Apollo(operation).fetch();
+      const { cliLogin } = await this.fetch(operation);
       return cliLogin;
     } catch (err) {
       throw err;

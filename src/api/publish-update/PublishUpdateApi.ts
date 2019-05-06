@@ -4,13 +4,14 @@ import { Apollo } from "../Apollo";
 import keytar from "../../utils/keytar";
 import { UndocFile } from "../../utils/UndocFile";
 
-export class PublishUpdateApi {
+export class PublishUpdateApi extends Apollo {
   commit: any;
   version: string;
   file: any;
   progress: any;
 
   constructor(commit: any, version: any, file: any, progress: any) {
+    super();
     this.commit = commit;
     this.version = version;
     this.file = file;
@@ -51,7 +52,7 @@ export class PublishUpdateApi {
       }
     };
     try {
-      const { cliPublishUpdate } = await new Apollo(operation).fetch();
+      const { cliPublishUpdate } = await this.fetch(operation);
 
       return cliPublishUpdate;
     } catch (err) {

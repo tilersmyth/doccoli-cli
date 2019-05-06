@@ -3,14 +3,15 @@ import { IsoGit } from "../../lib/IsoGit";
 /**
  * Get files updated since last publish
  */
-export class GetUpdatedFiles {
+export class LocalFiles extends IsoGit {
   sha: string;
 
   constructor(sha: string) {
+    super();
     this.sha = sha;
   }
 
-  private reduce(acc: any, row: any) {
+  private walkReduce(acc: any, row: any) {
     const FILE = 0,
       HEAD = 1,
       STAGING = 3;
@@ -60,7 +61,7 @@ export class GetUpdatedFiles {
   }
 
   walk = async () => {
-    const git: any = new IsoGit().git();
+    const git: any = this.git();
 
     const fileObj: any = {
       added: [],
@@ -76,6 +77,6 @@ export class GetUpdatedFiles {
       dir,
       pattern,
       ref
-    })).reduce(this.reduce, fileObj);
+    })).reduce(this.walkReduce, fileObj);
   };
 }

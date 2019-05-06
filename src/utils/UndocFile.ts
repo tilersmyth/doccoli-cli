@@ -1,7 +1,13 @@
 import { FileUtils } from "./FileUtils";
 
+interface ConfigFile {
+  key: string;
+  name: string;
+  language: string;
+}
+
 export class UndocFile {
-  static async config(): Promise<any> {
+  static async config(): Promise<ConfigFile> {
     try {
       const file = await FileUtils.readFile(".undoc/config.json");
 
