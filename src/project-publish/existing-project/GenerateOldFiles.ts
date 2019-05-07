@@ -1,34 +1,33 @@
 import { IsoGit } from "../../lib/IsoGit";
 import { FileUtils } from "../../utils/FileUtils";
 
-export class GenerateOldFiles {
-  oldOids: any;
-  private isoGit: IsoGit;
+interface ModifiedFile {
+  path: string;
+  oldOid: string;
+}
 
-  constructor(oldOids: any) {
+export class GenerateOldFiles extends IsoGit {
+  oldOids: ModifiedFile[];
+
+  constructor(oldOids: ModifiedFile[]) {
+    super();
     this.oldOids = oldOids;
-    this.isoGit = new IsoGit();
   }
 
+  private mapCreate = async (file: ModifiedFile) => {
+    const { object: blob } = await this.git().readObject({
+      dir: IsoGit.dir,
+      oid: file.oldOid,
+      encoding: "utf8"
+    });
+
+    return FileUtils.createFile(
+      `.undoc/temp/${file.oldOid}.ts`,
+      (blob as Buffer).toString("utf8")
+    );
+  };
+
   async create(): Promise<string[]> {
-    const git = this.isoGit.git();
-
-    const oldFiles: string[] = [];
-    for (const file of this.oldOids) {
-      const { object: blob } = await git.readObject({
-        dir: IsoGit.dir,
-        oid: file.oldOid,
-        encoding: "utf8"
-      });
-
-      const filePath = await FileUtils.createFile(
-        `.undoc/temp/${file.oldOid}.ts`,
-        (blob as Buffer).toString("utf8")
-      );
-
-      oldFiles.push(filePath);
-    }
-
-    return oldFiles;
+    return await Promise.all(this.oldOids.map(this.mapCreate));
   }
 }

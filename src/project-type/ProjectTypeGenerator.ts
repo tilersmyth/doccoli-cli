@@ -5,12 +5,12 @@ import PublishEvents from "../events/publish/Events";
  * Json doc generator
  */
 export class ProjectTypeGenerator {
+  oldFiles: string[];
   allFiles: string[];
-  isUpdate: boolean;
 
-  constructor(allFiles: string[], isUpdate: boolean) {
+  constructor(oldFiles: string[], allFiles: string[]) {
+    this.oldFiles = oldFiles;
     this.allFiles = allFiles;
-    this.isUpdate = isUpdate;
   }
 
   private async selectGenerator(undocEvents: any) {
@@ -21,8 +21,8 @@ export class ProjectTypeGenerator {
         case "typescript":
           return await require("@undoc/ts-gen").generate(
             undocEvents,
-            this.allFiles,
-            this.isUpdate
+            this.oldFiles,
+            this.allFiles
           );
         default:
           throw "invalid target type";

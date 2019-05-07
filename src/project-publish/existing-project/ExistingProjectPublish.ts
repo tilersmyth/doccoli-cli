@@ -70,10 +70,8 @@ export class ExistingProjectPublish {
       const modifiedByOid = await Promise.all(modified.map(fileOids.bind));
 
       const oldFiles = await new GenerateOldFiles(modifiedByOid).create();
-      await new ProjectTypeGenerator(oldFiles, true).run();
-
       const newFiles = [...added, ...modified];
-      await new ProjectTypeGenerator(newFiles, false).run();
+      await new ProjectTypeGenerator(oldFiles, newFiles).run();
 
       const updateFiles = { tracked, added, modified: modifiedByOid };
       const updateQueries = await new ProjectTypeParser(updateFiles).run();
