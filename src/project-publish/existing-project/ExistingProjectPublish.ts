@@ -35,24 +35,24 @@ export class ExistingProjectPublish {
 
   run = async (): Promise<void> => {
     try {
-      const lastCommitSha = await this.iso.lastCommitSha();
+      const localCommit = await this.iso.commit();
 
-      const commit = this.publishStatus.commit;
+      const remoteCommit = this.publishStatus.commit;
 
-      if (lastCommitSha === commit.sha) {
+      if (localCommit === remoteCommit.sha) {
         const context = "Project up-to-date. Nothing to do.";
         PublishEvents.emitter("noaction_up_to_date", context);
         return;
       }
 
-      await this.statusEvent(lastCommitSha);
+      await this.statusEvent(localCommit.sha);
 
-      const lastCommitPub = ExistingProjectPublish.shortSha(commit.sha);
+      const lastCommitPub = ExistingProjectPublish.shortSha(remoteCommit.sha);
 
       PublishEvents.emitter(
         "existing_last_commit",
         `Last published: [${lastCommitPub}] ${moment(
-          commit.createdAt
+          remoteCommit.createdAt
         ).fromNow()}`
       );
 
@@ -61,11 +61,11 @@ export class ExistingProjectPublish {
         "Gathering modified file line changes"
       );
 
-      const projectFiles = new ProjectFiles(commit.sha);
+      const projectFiles = new ProjectFiles(remoteCommit);
 
       const { tracked, modified, added } = await projectFiles.files();
 
-      const fileOids = new ModifiedFileOids(commit.sha);
+      const fileOids = new ModifiedFileOids(remoteCommit.sha);
 
       const modifiedByOid = await Promise.all(modified.map(fileOids.bind));
 
@@ -77,6 +77,8 @@ export class ExistingProjectPublish {
 
       const updateFiles = { tracked, added, modified: modifiedByOid };
       const updateQueries = await new ProjectTypeParser(updateFiles).run();
+
+      // need to handle newly added (tagged) files here
 
       await new PublishProjectUpdatedFiles(updateQueries.modified).run();
     } catch (err) {

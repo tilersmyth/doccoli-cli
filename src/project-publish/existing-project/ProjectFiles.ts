@@ -8,10 +8,10 @@ interface ProjectFilesUpdates {
 }
 
 export class ProjectFiles {
-  private localSha: string;
+  private localCommit: any;
 
-  constructor(localSha: string) {
-    this.localSha = localSha;
+  constructor(localCommit: any) {
+    this.localCommit = localCommit;
   }
 
   private fileFilter = (localFiles: string[], trackedFiles: string[]) => {
@@ -20,9 +20,9 @@ export class ProjectFiles {
 
   files = async (): Promise<ProjectFilesUpdates> => {
     // 1. Get all local (GIT) file updates
-    const localFiles = await new LocalFiles(this.localSha).walk();
+    const localFiles = await new LocalFiles(this.localCommit.sha).walk();
 
-    const tracked = new TrackedFilesApi(this.localSha);
+    const tracked = new TrackedFilesApi(this.localCommit);
     // 2. Get all tracked (remote) files
     const trackedFiles = await tracked.get();
 

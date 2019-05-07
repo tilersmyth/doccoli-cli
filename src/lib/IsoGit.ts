@@ -11,10 +11,20 @@ export class IsoGit {
   static dir = FileUtils.root();
 
   async branch() {
-    return await git.currentBranch({
-      dir: IsoGit.dir,
-      fullname: false
-    });
+    try {
+      const branch = await git.currentBranch({
+        dir: IsoGit.dir,
+        fullname: false
+      });
+
+      if (!branch) {
+        throw "Unable to determine commit branch";
+      }
+
+      return branch;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async lastCommitSha(): Promise<string> {
@@ -26,6 +36,16 @@ export class IsoGit {
       }
 
       return commits[0].oid;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async commit(): Promise<{ sha: string; branch: string }> {
+    try {
+      const sha = await this.lastCommitSha();
+      const branch = await this.branch();
+      return { sha, branch };
     } catch (err) {
       throw err;
     }

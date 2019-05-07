@@ -5,9 +5,9 @@ import keytar from "../utils/keytar";
 import { UndocFile } from "../utils/UndocFile";
 
 export class TrackedFilesApi extends Apollo {
-  commit: string;
+  commit: any;
 
-  constructor(commit: string) {
+  constructor(commit: any) {
     super();
     this.commit = commit;
   }
@@ -51,6 +51,52 @@ export class TrackedFilesApi extends Apollo {
     }
   }
 
+  async insert(files: []): Promise<any> {
+    try {
+      const token = await keytar.getToken();
+      const config = await UndocFile.config();
+
+      const operation = {
+        query: gql`
+          mutation InsertFiles(
+            $commit: ModuleCommit!
+            $files: [ModuleFileInput!]
+          ) {
+            insertFiles(commit: $commit, files: $files) {
+              success
+              error {
+                path
+                message
+              }
+            }
+          }
+        `,
+        variables: {
+          files,
+          commit: this.commit
+        },
+        context: {
+          headers: {
+            Authorization: token,
+            ProjectKey: config.key
+          }
+        }
+      };
+
+      const {
+        insertFiles: { success, error }
+      } = await this.fetch(operation);
+
+      if (error) {
+        throw error;
+      }
+
+      return success;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async delete(files: string[]): Promise<any> {
     try {
       const token = await keytar.getToken();
@@ -58,8 +104,8 @@ export class TrackedFilesApi extends Apollo {
 
       const operation = {
         query: gql`
-          mutation DeleteFiles($files: [String!], $commit: String!) {
-            deleteFiles(files: $files, commit: $commit) {
+          mutation DeleteFiles($commit: ModuleCommit!, $files: [String!]) {
+            deleteFiles(commit: $commit, files: $files) {
               success
               error {
                 path
