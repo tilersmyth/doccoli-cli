@@ -16,7 +16,7 @@ export class PublishEventGroup {
       init: GenericLogger,
       connect: GenericLogger,
       existing: GenericLogger,
-      isogit: GenericLogger,
+      existingFiles: GenericLogger,
       generator: GeneratorLogger,
       parser: ParserLogger,
       push: GenericLogger,

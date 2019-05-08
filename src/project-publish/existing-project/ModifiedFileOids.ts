@@ -1,4 +1,7 @@
 import { IsoGit } from "../../lib/IsoGit";
+import { FileUtils } from "../../utils/FileUtils";
+
+import PublishEvents from "../../events/publish/Events";
 
 interface ModifiedFile {
   path: string;
@@ -37,6 +40,13 @@ export class ModifiedFileOids extends IsoGit {
     }
   };
 
+  private createFileEvent = () => {
+    PublishEvents.emitter(
+      "existingFiles_createMod",
+      "Creating modified files at last oid"
+    );
+  };
+
   bind = async (file: string): Promise<ModifiedFile> => {
     const fileObj: ModifiedFile = { path: file, oldOid: "" };
     const git = this.git();
@@ -62,5 +72,31 @@ export class ModifiedFileOids extends IsoGit {
     }
 
     return fileObj;
+  };
+
+  private createFile = async (file: ModifiedFile) => {
+    const { object: blob } = await this.git().readObject({
+      dir: IsoGit.dir,
+      oid: file.oldOid,
+      encoding: "utf8"
+    });
+
+    return FileUtils.createFile(
+      `.undoc/temp/${file.oldOid}.ts`,
+      (blob as Buffer).toString("utf8")
+    );
+  };
+
+  create = async (files: ModifiedFile[]) => {
+    if (files.length === 0) {
+      return [];
+    }
+
+    PublishEvents.emitter(
+      "existingFiles_createMod",
+      "Creating modified files at last oid"
+    );
+
+    return Promise.all(files.map(this.createFile));
   };
 }
