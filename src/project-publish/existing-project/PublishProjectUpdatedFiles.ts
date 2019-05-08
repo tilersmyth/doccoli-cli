@@ -1,7 +1,7 @@
 import { PublishApi } from "../../api/PublishApi";
 import { IsoGit } from "../../lib/IsoGit";
 
-import { PublishUpdateApi } from "../../api/publish-update/PublishUpdateApi";
+import { PublishUpdateApi } from "../../api/PublishUpdateApi";
 
 /**
  * Publish project files to server

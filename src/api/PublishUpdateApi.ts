@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
-import { Apollo } from "../Apollo";
-import keytar from "../../utils/keytar";
-import { UndocFile } from "../../utils/UndocFile";
+import { Apollo } from "./Apollo";
+import keytar from "../utils/keytar";
+import { UndocFile } from "../utils/UndocFile";
 
 export class PublishUpdateApi extends Apollo {
   commit: any;
@@ -35,7 +35,13 @@ export class PublishUpdateApi extends Apollo {
             version: $version
             file: $file
             progress: $progress
-          )
+          ) {
+            success
+            error {
+              path
+              message
+            }
+          }
         }
       `,
       variables: {
@@ -52,11 +58,16 @@ export class PublishUpdateApi extends Apollo {
       }
     };
     try {
-      const { cliPublishUpdate } = await this.fetch(operation);
+      const {
+        cliPublishUpdate: { success, error }
+      } = await this.fetch(operation);
 
-      return cliPublishUpdate;
+      if (error) {
+        throw `Server error: ${error.message}`;
+      }
+
+      return success;
     } catch (err) {
-      console.log(err.result);
       throw err;
     }
   }
