@@ -1,6 +1,7 @@
 import * as moment from "moment";
 
 import { IsoGit } from "../../lib/IsoGit";
+import { GetAllProjectFiles } from "../new-project/GetAllProjectFiles";
 import { ProjectTypeGenerator } from "../../project-type/ProjectTypeGenerator";
 import { ProjectTypeParser } from "../../project-type/ProjectTypeParser";
 import { PublishProjectUpdatedFiles } from "./PublishProjectUpdatedFiles";
@@ -55,15 +56,15 @@ export class ExistingProjectPublish extends IsoGit {
       const modifiedByOid = await Promise.all(modified.map(fileOids.bind));
       const oldFiles = await fileOids.create(modifiedByOid);
 
-      const newFiles = [...added, ...modified];
-      await new ProjectTypeGenerator(oldFiles, newFiles).run();
+      const allFiles = await new GetAllProjectFiles().target();
+      await new ProjectTypeGenerator(oldFiles, allFiles).run();
 
       const updateFiles = { tracked, added, modified: modifiedByOid };
       const updateQueries = await new ProjectTypeParser(updateFiles).run();
 
       // need to handle newly added (tagged) files here
 
-      // await new PublishProjectUpdatedFiles(updateQueries.modified).run();
+      await new PublishProjectUpdatedFiles(updateQueries.modified).run();
     } catch (err) {
       throw err;
     }

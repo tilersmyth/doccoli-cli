@@ -8,7 +8,10 @@ export class GetAllProjectFiles {
     try {
       const iso = new IsoGit();
       const files = await iso.git().listFiles({ dir: IsoGit.dir });
-      return files.filter((file: string) => file.startsWith("src/"));
+      // Note: if more languages offered will need to ammend filter
+      return files.filter(
+        (file: string) => file.startsWith("src/") && file.endsWith(".ts")
+      );
     } catch (err) {
       throw err;
     }

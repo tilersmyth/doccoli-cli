@@ -16,9 +16,9 @@ export class NewProjectPublish extends IsoGit {
   run = async (): Promise<void> => {
     try {
       await new NewPublishSpeedBump().run();
-      const newFiles = await new GetAllProjectFiles().target();
-      await new ProjectTypeGenerator([], newFiles).run();
-      const files = { tracked: [], added: newFiles, modified: [] };
+      const allFiles = await new GetAllProjectFiles().target();
+      await new ProjectTypeGenerator([], allFiles).run();
+      const files = { tracked: [], added: allFiles, modified: [] };
       const results = await new ProjectTypeParser(files).run();
       PublishEvents.emitter("push_new_publish", "Pushing nodes to server");
 

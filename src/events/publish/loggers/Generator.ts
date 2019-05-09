@@ -12,8 +12,8 @@ export class GeneratorLogger {
   }
 
   fileCount: number = 0;
-  reflectionTotal: number = 0;
-  reflectionCount: number = 0;
+  reflectionTotal: number = 1;
+  reflectionCount: number = 1;
 
   private static console(value: string) {
     process.stdout.write(chalk.white(`    ${value}`));
@@ -26,30 +26,20 @@ export class GeneratorLogger {
   }
 
   private verbose(event: string, context: any) {
-    if (event === "begin") {
-      GeneratorLogger.console("Started TypeDoc compiling");
-    }
-
     if (event === "fileBegin") {
-      const count = this.fileCount++;
-      GeneratorLogger.writeOutput(`Reviewing ${count} files`);
+      GeneratorLogger.writeOutput(context);
     }
 
     if (event === "resolveBegin") {
-      this.reflectionTotal = Object.keys(context.project.reflections).length;
-      console.log("");
+      GeneratorLogger.console("\n");
     }
 
     if (event === "resolveReflection") {
-      const count = this.reflectionCount++;
-      const total = this.reflectionTotal;
-      const percentage = ((count / total) * 100).toFixed(0);
-      GeneratorLogger.writeOutput(`Resolving reflections ${percentage}%`);
+      GeneratorLogger.writeOutput(context);
     }
 
     if (event === "end") {
-      console.log("");
-      GeneratorLogger.console("Finished TypeDoc compiling\n");
+      GeneratorLogger.console("\n");
     }
   }
 
