@@ -3,7 +3,7 @@ import PublishEvents from "../events/publish/Events";
 
 interface ModifiedFile {
   path: string;
-  oldOid: string;
+  oldPath: string;
 }
 
 interface ParserFiles {

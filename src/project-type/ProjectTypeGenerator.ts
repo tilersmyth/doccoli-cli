@@ -5,10 +5,10 @@ import PublishEvents from "../events/publish/Events";
  * Json doc generator
  */
 export class ProjectTypeGenerator {
-  oldFiles: string[];
+  oldFiles: any;
   allFiles: string[];
 
-  constructor(oldFiles: string[], allFiles: string[]) {
+  constructor(oldFiles: any, allFiles: string[]) {
     this.oldFiles = oldFiles;
     this.allFiles = allFiles;
   }

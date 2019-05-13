@@ -1,4 +1,4 @@
-import { CommitSpeedBump } from "./CommitSpeedBump";
+import { RepoSpeedBump } from "./RepoSpeedBump";
 import { GetAllProjectFiles } from "../new-project/GetAllProjectFiles";
 import { ProjectTypeGenerator } from "../../project-type/ProjectTypeGenerator";
 import { ProjectTypeParser } from "../../project-type/ProjectTypeParser";
@@ -20,7 +20,7 @@ export class ExistingProjectPublish {
     try {
       const remoteCommit = this.publishStatus;
 
-      const targetCommits = await new CommitSpeedBump(
+      const targetCommits = await new RepoSpeedBump(
         remoteCommit.commit
       ).check();
 
@@ -31,14 +31,14 @@ export class ExistingProjectPublish {
       const projectFiles = new ProjectFiles(remoteCommit.commit);
       const { tracked, modified, added } = await projectFiles.files();
 
-      const fileOids = new ModifiedFileOids(targetCommits);
-      const modifiedByOid = await Promise.all(modified.map(fileOids.bind));
-      const oldFiles = await fileOids.create(modifiedByOid);
+      const fileOids = new ModifiedFileOids(remoteCommit.commit.sha);
+      const modifiedFiles = await fileOids.create(modified);
 
+      const oldFiles = modifiedFiles.map((file: any) => file.oldPath);
       const allFiles = await new GetAllProjectFiles().target();
       await new ProjectTypeGenerator(oldFiles, allFiles).run();
 
-      const updateFiles = { tracked, added, modified: modifiedByOid };
+      const updateFiles = { tracked, added, modified: modifiedFiles };
       const updateQueries = await new ProjectTypeParser(updateFiles).run();
 
       // need to handle newly added (tagged) files here

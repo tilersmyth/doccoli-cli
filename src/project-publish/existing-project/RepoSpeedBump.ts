@@ -4,7 +4,7 @@ import { IsoGit } from "../../lib/IsoGit";
 
 import PublishEvents from "../../events/publish/Events";
 
-export class CommitSpeedBump extends IsoGit {
+export class RepoSpeedBump extends IsoGit {
   constructor(private remoteCommit: any) {
     super();
     this.remoteCommit = remoteCommit;
@@ -16,13 +16,13 @@ export class CommitSpeedBump extends IsoGit {
 
   private commitStatusEvent = async (newCommits: any) => {
     const localCommit = await this.commit();
-    const localSha = CommitSpeedBump.shortSha(localCommit.sha);
+    const localSha = RepoSpeedBump.shortSha(localCommit.sha);
     PublishEvents.emitter(
       "existing_publish",
       `Publishing update [${localCommit.branch} ${localSha}]`
     );
 
-    const remoteSha = CommitSpeedBump.shortSha(this.remoteCommit.sha);
+    const remoteSha = RepoSpeedBump.shortSha(this.remoteCommit.sha);
 
     PublishEvents.emitter(
       "existing_last_commit",
@@ -57,8 +57,8 @@ export class CommitSpeedBump extends IsoGit {
     if (index + 1 === array.length) {
       // If capture still true remote commit was never found
       if (acc.capture) {
-        const remoteSha = CommitSpeedBump.shortSha(this.remoteCommit.sha);
-        const currentSha = CommitSpeedBump.shortSha(array[0].oid);
+        const remoteSha = RepoSpeedBump.shortSha(this.remoteCommit.sha);
+        const currentSha = RepoSpeedBump.shortSha(array[0].oid);
 
         acc.error = {
           path: "error_remote_not_found",
