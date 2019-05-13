@@ -13,11 +13,18 @@ import PublishEvents from "../../events/publish/Events";
  * New project publish
  */
 export class NewProjectPublish extends IsoGit {
+  constructor(private branches: string[]) {
+    super();
+    this.branches = branches;
+  }
+
   run = async (): Promise<void> => {
     try {
-      await new NewPublishSpeedBump().run();
+      await new NewPublishSpeedBump(this.branches).run();
       const allFiles = await new GetAllProjectFiles().target();
+
       await new ProjectTypeGenerator([], allFiles).run();
+
       const files = { tracked: [], added: allFiles, modified: [] };
       const results = await new ProjectTypeParser(files).run();
       PublishEvents.emitter("push_new_publish", "Pushing nodes to server");

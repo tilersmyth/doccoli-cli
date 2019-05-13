@@ -1,7 +1,7 @@
 import * as ora from "ora";
 
 import { GenericLogger, ErrorsLogger } from "../shared-loggers";
-import { GeneratorLogger, ParserLogger, NoActionLogger } from "./loggers";
+import { GeneratorLogger, ParserLogger, NoticeLogger } from "./loggers";
 import { EventToken } from "../Types";
 
 export class PublishEventGroup {
@@ -23,7 +23,7 @@ export class PublishEventGroup {
       cleanup: GenericLogger,
       complete: GenericLogger,
       error: ErrorsLogger,
-      noaction: NoActionLogger
+      notice: NoticeLogger
     }
   ];
 

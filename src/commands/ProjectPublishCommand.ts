@@ -45,7 +45,7 @@ export class ProjectPublishCommand {
 
       if (!publishStatus.commit) {
         PublishEvents.spinnerReset();
-        await new NewProjectPublish().run();
+        await new NewProjectPublish(publishStatus.branches).run();
         return;
       }
 

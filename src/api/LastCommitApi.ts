@@ -35,6 +35,7 @@ export class LastCommitApi extends Apollo {
                 branch
                 createdAt
               }
+              branches
               error {
                 path
                 message
@@ -52,14 +53,14 @@ export class LastCommitApi extends Apollo {
       };
 
       const {
-        cliLastCommit: { error, commit, project, user }
+        cliLastCommit: { error, ...args }
       } = await this.fetch(operation);
 
       if (error) {
         throw error.message;
       }
 
-      return { commit, project, user };
+      return { ...args };
     } catch (err) {
       throw err;
     }

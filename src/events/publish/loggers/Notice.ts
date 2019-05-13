@@ -3,7 +3,7 @@ import * as ora from "ora";
 
 import { EventToken } from "../../Types";
 
-export class NoActionLogger {
+export class NoticeLogger {
   spinner: ora.Ora;
 
   constructor(spinner: ora.Ora) {

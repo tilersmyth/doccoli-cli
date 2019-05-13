@@ -67,28 +67,48 @@ export class ParserLogger {
     }
   }
 
+  private verbose = (event: string, context: any) => {
+    if (event === "moduleBegin") {
+      ParserLogger.writeOutput(context);
+    }
+
+    if (event === "nodeBegin") {
+      ParserLogger.writeOutput(context);
+    }
+
+    if (event === "refBegin") {
+      ParserLogger.writeOutput(context);
+    }
+
+    if (event === "end") {
+      ParserLogger.console("\n");
+    }
+  };
+
   log = (context: any, newEvent: EventToken, __: EventToken): void => {
     if (newEvent.payload === "init") {
       this.spinner.start(chalk.bold.whiteBright(context));
       return;
     }
 
+    this.verbose(newEvent.payload, context);
+
     // Parsing sub token
-    const subEvent = EventsUtils.parser(newEvent.payload);
+    // const subEvent = EventsUtils.parser(newEvent.payload);
 
-    if (subEvent.group === "update") {
-      this.verboseUpdate(subEvent.payload, context);
-      return;
-    }
+    // if (subEvent.group === "update") {
+    //   this.verboseUpdate(subEvent.payload, context);
+    //   return;
+    // }
 
-    if (subEvent.group === "ref") {
-      this.verboseRef(subEvent.payload, context);
-      return;
-    }
+    // if (subEvent.group === "ref") {
+    //   this.verboseRef(subEvent.payload, context);
+    //   return;
+    // }
 
-    if (subEvent.group === "new") {
-      this.verboseNew(subEvent.payload, context);
-      return;
-    }
+    // if (subEvent.group === "new") {
+    //   this.verboseNew(subEvent.payload, context);
+    //   return;
+    // }
   };
 }
