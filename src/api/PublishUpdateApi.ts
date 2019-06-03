@@ -5,20 +5,13 @@ import keytar from "../utils/keytar";
 import { UndocFile } from "../utils/UndocFile";
 
 export class PublishUpdateApi extends Apollo {
-  commit: any;
-  version: string;
-  file: any;
-  progress: any;
-
-  constructor(commit: any, version: any, file: any, progress: any) {
+  constructor(private commit: any, private version: any) {
     super();
     this.commit = commit;
     this.version = version;
-    this.file = file;
-    this.progress = progress;
   }
 
-  async results(): Promise<any> {
+  async results(file: any, progress: any): Promise<any> {
     const token = await keytar.getToken();
     const config = await UndocFile.config();
 
@@ -27,7 +20,7 @@ export class PublishUpdateApi extends Apollo {
         mutation CliPublishUpdate(
           $commit: ModuleCommit!
           $version: String!
-          $file: FileUpdate!
+          $file: FileQuery!
           $progress: PublishProgress!
         ) {
           cliPublishUpdate(
@@ -47,8 +40,8 @@ export class PublishUpdateApi extends Apollo {
       variables: {
         commit: this.commit,
         version: this.version,
-        file: this.file,
-        progress: this.progress
+        file,
+        progress
       },
       context: {
         headers: {

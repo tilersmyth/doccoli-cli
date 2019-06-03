@@ -1,17 +1,11 @@
 import gql from "graphql-tag";
 
 import { Apollo } from "./Apollo";
+import { IsoGit } from "../lib/IsoGit";
 import keytar from "../utils/keytar";
 import { UndocFile } from "../utils/UndocFile";
 
 export class TrackedFilesApi extends Apollo {
-  commit: any;
-
-  constructor(commit: any) {
-    super();
-    this.commit = commit;
-  }
-
   async get(): Promise<any> {
     try {
       const token = await keytar.getToken();
@@ -53,6 +47,7 @@ export class TrackedFilesApi extends Apollo {
 
   async insert(files: []): Promise<any> {
     try {
+      const commit = await new IsoGit().commit();
       const token = await keytar.getToken();
       const config = await UndocFile.config();
 
@@ -73,7 +68,7 @@ export class TrackedFilesApi extends Apollo {
         `,
         variables: {
           files,
-          commit: this.commit
+          commit
         },
         context: {
           headers: {
@@ -99,6 +94,7 @@ export class TrackedFilesApi extends Apollo {
 
   async delete(files: string[]): Promise<any> {
     try {
+      const commit = await new IsoGit().commit();
       const token = await keytar.getToken();
       const config = await UndocFile.config();
 
@@ -116,7 +112,7 @@ export class TrackedFilesApi extends Apollo {
         `,
         variables: {
           files,
-          commit: this.commit
+          commit
         },
         context: {
           headers: {

@@ -1,10 +1,13 @@
 import { RepoSpeedBump } from "./RepoSpeedBump";
+import { FileTree } from "../FileTree";
 import { GetAllProjectFiles } from "../new-project/GetAllProjectFiles";
 import { ProjectTypeGenerator } from "../../project-type/ProjectTypeGenerator";
 import { ProjectTypeParser } from "../../project-type/ProjectTypeParser";
 import { PublishProjectUpdatedFiles } from "./PublishProjectUpdatedFiles";
 import { ProjectFiles } from "./ProjectFiles";
 import { ModifiedFileOids } from "./ModifiedFileOids";
+
+import PublishEvents from "../../events/publish/Events";
 
 /**
  * Existing project publish
@@ -28,7 +31,12 @@ export class ExistingProjectPublish {
         return;
       }
 
-      const projectFiles = new ProjectFiles(remoteCommit.commit);
+      const localFiles = await new FileTree(
+        true,
+        remoteCommit.commit.sha
+      ).walk();
+
+      const projectFiles = new ProjectFiles(localFiles);
       const { tracked, modified, added } = await projectFiles.files();
 
       const fileOids = new ModifiedFileOids(remoteCommit.commit.sha);
@@ -42,8 +50,14 @@ export class ExistingProjectPublish {
       const updateQueries = await new ProjectTypeParser(updateFiles).run();
 
       // need to handle newly added (tagged) files here
+      PublishEvents.emitter("push_new_publish", "Pushing nodes to server");
+      await new PublishProjectUpdatedFiles(updateQueries.modified)
+        .run()
+        .catch((err: any) => {
+          throw err;
+        });
 
-      await new PublishProjectUpdatedFiles(updateQueries.modified).run();
+      PublishEvents.emitter("complete_new_publish", "Publish successful!");
     } catch (err) {
       throw err;
     }

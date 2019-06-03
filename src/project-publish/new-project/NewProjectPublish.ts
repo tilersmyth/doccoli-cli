@@ -1,6 +1,5 @@
-import { IsoGit } from "../../lib/IsoGit";
 import { NewPublishSpeedBump } from "./NewPublishSpeedBump";
-import { GetAllProjectFiles } from "./GetAllProjectFiles";
+import { FileTree } from "../FileTree";
 import { ProjectTypeGenerator } from "../../project-type/ProjectTypeGenerator";
 import { ProjectTypeParser } from "../../project-type/ProjectTypeParser";
 import { TrackedFilesApi } from "../../api/TrackedFilesApi";
@@ -12,21 +11,22 @@ import PublishEvents from "../../events/publish/Events";
 /**
  * New project publish
  */
-export class NewProjectPublish extends IsoGit {
+export class NewProjectPublish {
   constructor(private branches: string[]) {
-    super();
     this.branches = branches;
   }
 
   run = async (): Promise<void> => {
     try {
       await new NewPublishSpeedBump(this.branches).run();
-      const allFiles = await new GetAllProjectFiles().target();
 
-      await new ProjectTypeGenerator([], allFiles).run();
+      const localFiles = await new FileTree(false).walk();
 
-      const files = { tracked: [], added: allFiles, modified: [] };
+      await new ProjectTypeGenerator([], localFiles.all).run();
+
+      const files = { tracked: [], added: localFiles.all, modified: [] };
       const results = await new ProjectTypeParser(files).run();
+
       PublishEvents.emitter("push_new_publish", "Pushing nodes to server");
 
       if (results.added.length > 0) {
@@ -34,8 +34,7 @@ export class NewProjectPublish extends IsoGit {
           return { path, name, kind };
         });
 
-        const commit = await this.commit();
-        await new TrackedFilesApi(commit).insert(addedFiles);
+        await new TrackedFilesApi().insert(addedFiles);
       }
 
       await new PublishProjectFiles(results.added).run();

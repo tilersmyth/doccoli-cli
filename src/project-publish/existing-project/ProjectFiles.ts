@@ -1,4 +1,3 @@
-import { LocalFiles } from "./LocalFiles";
 import { TrackedFilesApi } from "../../api/TrackedFilesApi";
 
 import PublishEvents from "../../events/publish/Events";
@@ -10,21 +9,12 @@ interface ProjectFilesUpdates {
 }
 
 export class ProjectFiles {
-  private localCommit: any;
-
-  constructor(localCommit: any) {
-    this.localCommit = localCommit;
+  constructor(private localFiles: any) {
+    this.localFiles = localFiles;
   }
 
   private fileFilter = (localFiles: string[], trackedFiles: string[]) => {
     return localFiles.filter((file: string) => trackedFiles.includes(file));
-  };
-
-  private initEvent = () => {
-    PublishEvents.emitter(
-      "existingFiles_init",
-      "Looking for updates to file tree"
-    );
   };
 
   private localFilesEvent = (localFiles: any) => {
@@ -46,32 +36,37 @@ export class ProjectFiles {
   };
 
   files = async (): Promise<ProjectFilesUpdates> => {
-    this.initEvent();
+    try {
+      this.localFilesEvent(this.localFiles);
 
-    // 1. Get all local (GIT) file updates
-    const localFiles = await new LocalFiles(this.localCommit.sha).walk();
+      const tracked = new TrackedFilesApi();
+      // 2. Get all tracked (remote) files
+      const trackedFiles = await tracked.get();
 
-    this.localFilesEvent(localFiles);
+      // 3. Handle deleted files
+      const trackedDeleted = this.fileFilter(
+        this.localFiles.deleted,
+        trackedFiles
+      );
+      if (trackedDeleted.length > 0) {
+        await tracked.delete(trackedDeleted);
+      }
 
-    const tracked = new TrackedFilesApi(this.localCommit);
-    // 2. Get all tracked (remote) files
-    const trackedFiles = await tracked.get();
+      // 4. Determine tracked files that have been modified locally
+      const trackedModified = this.fileFilter(
+        this.localFiles.modified,
+        trackedFiles
+      );
 
-    // 3. Handle deleted files
-    const trackedDeleted = this.fileFilter(localFiles.deleted, trackedFiles);
-    if (trackedDeleted.length > 0) {
-      await tracked.delete(trackedDeleted);
+      this.trackedFilesEvent(trackedModified, trackedDeleted);
+
+      return {
+        tracked: trackedFiles,
+        modified: trackedModified,
+        added: this.localFiles.added
+      };
+    } catch (err) {
+      throw err;
     }
-
-    // 4. Determine tracked files that have been modified locally
-    const trackedModified = this.fileFilter(localFiles.modified, trackedFiles);
-
-    this.trackedFilesEvent(trackedModified, trackedDeleted);
-
-    return {
-      tracked: trackedFiles,
-      modified: trackedModified,
-      added: localFiles.added
-    };
   };
 }

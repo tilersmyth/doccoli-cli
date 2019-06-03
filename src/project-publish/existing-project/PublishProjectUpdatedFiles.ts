@@ -7,31 +7,28 @@ import { PublishUpdateApi } from "../../api/PublishUpdateApi";
  * Publish project files to server
  */
 export class PublishProjectUpdatedFiles {
-  updateQueries: any = [];
   iso: IsoGit;
 
-  constructor(updateQueries: any) {
-    this.updateQueries = updateQueries;
+  constructor(private files: any) {
+    this.files = files;
     this.iso = new IsoGit();
   }
 
-  run = async (): Promise<void> => {
-    try {
-      const sha = await this.iso.lastCommitSha();
-      const branch = await this.iso.branch();
+  run = async (): Promise<any> => {
+    const sha = await this.iso.lastCommitSha();
+    const branch = await this.iso.branch();
 
-      const publish = this.updateQueries;
+    const publish = new PublishUpdateApi({ sha, branch }, "");
 
-      for (let i = 0; i < publish.length; i++) {
-        await new PublishUpdateApi({ sha, branch }, "", publish[i], {
-          nodesPublished: i + 1,
-          nodesTotal: publish.length
-        }).results();
-      }
+    return Promise.all(
+      this.files.map(async (file: any, index: number) => {
+        const progress = {
+          published: index + 1,
+          total: this.files.length
+        };
 
-      return;
-    } catch (err) {
-      throw err;
-    }
+        await publish.results(file, progress);
+      })
+    );
   };
 }
